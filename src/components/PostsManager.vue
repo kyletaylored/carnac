@@ -26,7 +26,7 @@
           </tbody>
         </table>
       </b-col>
-      <b-col lg="3">
+      <b-col lg="4">
         <b-card :title="(model.id ? 'Edit Post ID#' + model.id : 'New Post')">
           <form @submit.prevent="savePost">
             <b-form-group label="Title">
@@ -34,9 +34,12 @@
               <autocomplete
                 url="https://www.reddit.com/subreddits/search.json"
                 param="q"
+                placeholder="search for subreddits..."
                 :min=3
+                :debounce=2
                 anchor="display_name"
-                label="description"
+                label="audience_target"
+                className="form-control"
                 :process="cleanResp"
                 :on-show="cleanLabel"
                 :on-select="getData">
