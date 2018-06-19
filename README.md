@@ -1,6 +1,8 @@
-# carnac
+# Carnac
 
-> A reddit trend analysis dashboard
+> A magic machine that runs a trend analysis on selected Reddit subs.
+
+![Reddit Trend Analyzer](https://github.com/kyletaylored/carnac/raw/master/static/reddit%20trend%20analyzer.jpg)
 
 #### Build Setup
 
