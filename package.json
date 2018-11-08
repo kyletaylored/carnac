@@ -1,20 +1,19 @@
 {
-  "name": "node-app1",
+  "name": "node-app",
   "version": "1.0.0",
   "description": "First node app to test Reddit API calls.",
-  "main": "index.js",
+  "main": "./server/main.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node ./server/main.js"
   },
   "author": "Justin Stout",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@google-cloud/language": "^2.0.0",
     "dotenv": "^6.1.0",
+    "eslint": "^5.8.0",
     "natural": "^0.6.2",
     "snoowrap": "^1.15.2"
-  },
-  "devDependencies": {
-    "eslint": "^5.8.0"
   }
 }

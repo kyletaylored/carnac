@@ -9,4 +9,6 @@ The above is a mind map of how this tool will ideally work. After selecting a se
 Below is a mockup of the list dashboard.
 
 ![Carnac Dashboard](https://github.com/kyletaylored/carnac/raw/master/static/dashboard-outline.jpg)
+# Getting Started
 
+> Run: npm install -D
