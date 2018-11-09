@@ -6,7 +6,7 @@
   "scripts": {
     "node-web-server": "node ./client/node_web_server.js",
     "node-controller": "node ./server/node_controller.js",
-    "test": "npm-run-all -p -r node-web-server node-controller"
+    "test": "npm-run-all -p -r node-web-server"
   },
   "author": "Justin Stout",
   "license": "ISC",
