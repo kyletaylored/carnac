@@ -36,8 +36,6 @@ let userstring; //list of user subreddits concatinated with + if multiple subred
 
 // -------------------- { FUNCTIONS } ---------------------
 
-
-
 // function startNLP(titles) {
 //     let post_title = titles;
 //     console.log(post_title[0]);
@@ -49,6 +47,25 @@ let userstring; //list of user subreddits concatinated with + if multiple subred
 //     return;
 // };
 // ----------------------- { MAIN } -----------------------
+
+//# Setup server instance on port 3600
+const http = require('http');
+
+const hostname = 'localhost';
+const port = 36000;
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Connected to node server.\n');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+
+
+
 
 //#To use the function startNLP, include it in the "then" statment, otherwise use console.log in the "then" statement. 
 //Example: 
@@ -64,8 +81,8 @@ let userstring; //list of user subreddits concatinated with + if multiple subred
 // //#Get multiple subreddit post titles
 // r.getSubreddit('linux+funny').getHot({limit: 10}).map(post => post.title).then(console.log);
 
-r.getSubreddit('linux').getHot({limit: 10}).map(post => post.title).then(console.log);
-r.getSubreddit('funny').getHot({limit: 10}).map(post => post.title).then(console.log);
+// r.getSubreddit('linux').getHot({limit: 10}).map(post => post.title).then(console.log);
+// r.getSubreddit('funny').getHot({limit: 10}).map(post => post.title).then(console.log);
 
 // //#Testing embedded function using Promises/Listings
 // r.getHot({limit: 1000}).map(post => post.title).then(myListing => {
