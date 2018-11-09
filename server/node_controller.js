@@ -10,7 +10,7 @@ const http = require('http');
 // Create a snoowrap object with carnac_bot credentials
 
 const r = new snoowrap({
-    userAgent: 'reddit-bot-example-node',
+    userAgent: 'reddit-bot-node',
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     username: process.env.REDDIT_USER,

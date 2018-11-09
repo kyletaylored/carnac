@@ -1,7 +1,7 @@
 body{
     width: 95%;
     height: 100%;
-    background-image: url("background.jpg");
+    background-image: url("../images/background.jpg");
     background-size: cover;
 }
 .form {
@@ -24,7 +24,7 @@ body{
     border-style: solid;
     border-radius: 5px 5px 5px 5px;
 }
-.submitbutton{
+.button{
 
     width: 10%;
     height: 55px;
