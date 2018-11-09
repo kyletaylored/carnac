@@ -1,17 +1,14 @@
-//Written by: Justin Stout
-//Date: 10/31/2018
-//Reference "package.json" for dependencies
-
 // ----------------------- Includes -----------------------
 require('dotenv').config();
 const snoowrap = require('snoowrap');
+const http = require('http');
 
 //# May change to @google-cloud/language API
 //const natural = require('natural');
 
 
-// ---------------- Variables & Constants  ----------------
-//#Create a snoowrap object with carnac_bot credentials
+// Create a snoowrap object with carnac_bot credentials
+
 const r = new snoowrap({
     userAgent: 'reddit-bot-example-node',
     clientId: process.env.CLIENT_ID,
@@ -20,21 +17,27 @@ const r = new snoowrap({
     password: process.env.REDDIT_PASS
 });
 
-let userstring; //list of user subreddits concatinated with + if multiple subreddits entered
+// Initialize express object for express webserver
+// Declare variables for controller_server
+const hostname = 'localhost';
+const port = 8082;
+
+ //list of user subreddits concatinated with + if multiple subreddits entered
 
 
-//#Create a TfIdf object to analyze word frequency
+// Create a TfIdf object to analyze word frequency
 //const tfidf = new natural.TfIdf();
 
-//#Create natural object with credentials (In Progress)
+// Create natural object with credentials (In Progress)
 // const n = new natural({
 
 // });
 
-// ----------------------- config -------------------------
-//r.config({ proxies: false});
+/* ---------------------- config ------------------------*/
 
-// -------------------- { FUNCTIONS } ---------------------
+
+
+/* ------------------- { FUNCTIONS } --------------------*/
 
 // function startNLP(titles) {
 //     let post_title = titles;
@@ -46,27 +49,24 @@ let userstring; //list of user subreddits concatinated with + if multiple subred
 //     //console.log(tokenizer.tokenize(titles));
 //     return;
 // };
-// ----------------------- { MAIN } -----------------------
+/* ---------------------- { MAIN } ----------------------*/
 
-//# Setup server instance on port 3600
-const http = require('http');
 
-const hostname = 'localhost';
-const port = 36000;
 
-const server = http.createServer((req, res) => {
+let server = http.createServer((req, res) => {
+  //console.log(req);
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  res.end('Connected to node server.\n');
+  res.end('Connected to node server!\n');
 });
 
 server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log(`Node Controller running on http://${hostname}:${port}/`);
 });
 
 
 
-
+/* --------------------- { Examples } -------------------*/
 //#To use the function startNLP, include it in the "then" statment, otherwise use console.log in the "then" statement. 
 //Example: 
 //r.getHot().map(post => post.title).then(startNLP)

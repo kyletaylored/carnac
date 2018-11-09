@@ -1,10 +1,12 @@
 {
-  "name": "node-app",
+  "name": "carnac",
   "version": "1.0.0",
   "description": "First node app to test Reddit API calls.",
   "main": "./server/main.js",
   "scripts": {
-    "test": "node ./server/main.js"
+    "node-web-server": "node ./client/node_web_server.js",
+    "node-controller": "node ./server/node_controller.js",
+    "test": "npm-run-all -p -r node-web-server node-controller"
   },
   "author": "Justin Stout",
   "license": "ISC",
@@ -13,7 +15,9 @@
     "@google-cloud/language": "^2.0.0",
     "dotenv": "^6.1.0",
     "eslint": "^5.8.0",
+    "express": "^4.16.4",
     "natural": "^0.6.2",
+    "npm-run-all": "^4.1.3",
     "snoowrap": "^1.15.2"
   }
 }
