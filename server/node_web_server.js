@@ -52,5 +52,5 @@ webApp.post('/api/subreddit-info', (req, res) => {
 // Set server variable to listen on port 3000
 let server = webApp.listen(3000, function(){
 	let port = server.address().port;
-	console.log("Express Server started at http://localhost:%s", port);
+	console.log("Node Web Server started at http://localhost:%s", port);
 });
