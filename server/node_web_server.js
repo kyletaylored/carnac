@@ -18,13 +18,12 @@ let r = new snoowrap({
 /* ------------------ config ------------------ */
 
 // Set root directory for page content
-webApp.use(express.static(__dirname + '/public'));
+webApp.use(express.static(path.join(__dirname, '../client/public')));
 
 //# Custom css, js, and image paths
-
-webApp.use('/css', express.static(__dirname + '/public/css'));
-webApp.use('/js', express.static(__dirname + '/public/js'));
-webApp.use('/images', express.static(__dirname + '/public/images'));
+webApp.use('/css', express.static(path.join(__dirname, '/public/css')));
+webApp.use('/js', express.static(path.join(__dirname, '/public/js')));
+webApp.use('/images', express.static(path.join(__dirname, '/public/images')));
 
 
 /* ------------------ { MAIN } ------------------ */

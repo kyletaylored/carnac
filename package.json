@@ -4,7 +4,7 @@
   "description": "First node app to test Reddit API calls.",
   "main": "./server/main.js",
   "scripts": {
-    "node-web-server": "node ./client/node_web_server.js",
+    "node-web-server": "node ./server/node_web_server.js",
     "node-controller": "node ./server/node_controller.js",
     "test": "npm-run-all -p -r node-web-server"
   },
