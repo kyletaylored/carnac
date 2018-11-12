@@ -13,6 +13,7 @@
   "dependencies": {},
   "devDependencies": {
     "@google-cloud/language": "^2.0.0",
+    "acorn": "^6.0.4",
     "body-parser": "^1.18.3",
     "dotenv": "^6.1.0",
     "eslint": "^5.9.0",

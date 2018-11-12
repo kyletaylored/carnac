@@ -1,5 +1,5 @@
 /* ------------------- Includes -------------------*/
-const express = require("express");
+const express = require('express');
 const path = require('path');
 const snoowrap = require('snoowrap');
 const bodyParser = require('body-parser');
@@ -28,14 +28,9 @@ webApp.use('/images', express.static(path.join(__dirname, '/public/images')));
 
 /* ------------------ { MAIN } ------------------ */
 
-// Basic get / route that probably doesn't need to be used.
-// webApp.get('/', function (req, res) { 
-// 	res.redirect('/index.html');
-// });
-
 webApp.use(bodyParser.urlencoded({ extended: false }));
-
 webApp.post('/api/subreddit-info', (req, res) => {
+	
 	//Parse contetns of POST request and extract subreddit name
 	let name = req.body.subreddit;
 	let count = parseInt(req.body.number, 10);
@@ -50,7 +45,7 @@ webApp.post('/api/subreddit-info', (req, res) => {
 });
 
 // Set server variable to listen on port 3000
-let server = webApp.listen(3000, function(){
+let server = webApp.listen(3000, () => {
 	let port = server.address().port;
-	console.log("Express Server started at http://localhost:%s", port);
+	console.log('Node Web Server started at http://localhost:%s', port);
 });

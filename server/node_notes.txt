@@ -53,6 +53,11 @@ server.listen(port, hostname, () => {
 //     //then sendToNLP
 // });
 
+// Basic get / route that probably doesn't need to be used.
+// webApp.get('/', function (req, res) { 
+// 	res.redirect('/index.html');
+// });
+
 
 
 
