@@ -3,7 +3,7 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 const snoowrap = require('snoowrap');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 require('dotenv').config();
 
 /* ------------- Variables & Constants  ------------- */
@@ -84,7 +84,7 @@ function createAddWindow(){
 // Catch item:add using snoowrap
 ipcMain.on('item:add', function(e, item) {
 	
-	//Parse contetns of POST request and extract subreddit name
+	//Parse contents of POST request and extract subreddit name
 	// let name = req.body.subreddit;
 	//let count = parseInt(req.body.number, 10);
 
