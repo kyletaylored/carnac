@@ -1,12 +1,15 @@
 /* ------------------- Includes -------------------*/
-const express = require('express');
+const electron = require('electron');
+const url = require('url');
 const path = require('path');
 const snoowrap = require('snoowrap');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
 /* ------------- Variables & Constants  ------------- */
-let webApp = express();
+//let webApp = express();
+
+const {app, BrowserWindow, Menu, icpMain} = electron;
 let r = new snoowrap({
 	userAgent: 'reddit-bot-node',
 	clientId: process.env.CLIENT_ID,
@@ -17,16 +20,34 @@ let r = new snoowrap({
 
 /* ------------------ config ------------------ */
 
-// Set root directory for page content
-webApp.use(express.static(path.join(__dirname, '../client/public')));
+// Set ENV
+//process.env.NODE_ENV = 'production';
 
-//# Custom css, js, and image paths
-webApp.use('/css', express.static(path.join(__dirname, '/public/css')));
-webApp.use('/js', express.static(path.join(__dirname, '/public/js')));
-webApp.use('/images', express.static(path.join(__dirname, '/public/images')));
+let mainWindow;
 
 
 /* ------------------ { MAIN } ------------------ */
+
+// Listen for the app to be ready
+app.on('ready', function() {
+	//Create new Browser
+	mainWindow = new BrowserWindow({});
+
+	//Load html into window
+	mainWindow.loadURL(url.format({
+		pathname: path.join(__dirname, 'html/index.html'),
+		protocol:'file:',
+		slashes: true
+	}));
+	// Quit app when closed
+	mainWindow.on('closed', function () { 
+		app.quit();
+	});
+	//Build menu from template
+	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+	Menu.setApplicationMenu(mainMenu);
+});
+
 
 webApp.use(bodyParser.urlencoded({ extended: false }));
 webApp.post('/api/subreddit-info', (req, res) => {
