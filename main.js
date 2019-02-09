@@ -24,23 +24,51 @@ let r = new snoowrap({
 	password: process.env.REDDIT_PASS
 });
 
-let users = new Datastore({ filename: 'db/carnac-data.db', autoload: true});
 
-var scott = {  
-	name: 'Scott',
-	twitter: '@ScottWRobinson'
-};
-
-users.insert(scott, function(err, doc) {  
-	console.log('Inserted', doc.name, 'with ID', doc._id);
-});
-
-
-
-
-// db.loadDatabase( (err) => {
-
+////////////////////////////////////////////
+//////////Testing data store creation///////
+// let users = new Datastore({ 
+// 	filename: 'db/carnac-data-test.db', 
+// 	autoload: true,
+// 	onload: err => {
+// 		if (err) {
+// 			console.error('Error while loading the db!', err);
+// 		}
+// 	}
 // });
+
+/////////////////////////////////////////////
+//////////Testing data insertion/////////////
+// var scott = {  
+// 	name: 'Scott',
+// 	twitter: '@ScottWRobinson'
+// };
+
+// users.insert(scott, function(err, doc) {  
+// 	console.log('Inserted', doc.name, 'with ID', doc._id);
+// });
+
+/////////////////////////////////////////////
+//////////Testing data query/////////////////
+// users.findOne({ twitter: '@ScottWRobinson' }, function(err, doc) {  
+// 	console.log('Found user:', doc.name);
+// });
+
+/////////////////////////////////////////////
+//////////Testing data deletion//////////////
+// users.remove({ name: { $regex: /^Scott/ } }, function(err, numDeleted) {  
+// 	console.log('Deleted', numDeleted, 'user(s)');
+// });
+
+let users = new Datastore({ 
+	filename: 'db/carnac-data.db', 
+	autoload: true,
+	onload: err => {
+		if (err) {
+			console.error('Error while loading the db!', err);
+		}
+	}
+});
 
 /* ------------------ config ------------------ */
 
@@ -67,7 +95,12 @@ app.on('ready', () => {
 	});
 
 	//Load html into window
-	mainWindow.loadURL(`file://${__dirname}/html/index.html`);
+	mainWindow.loadURL(url.format({
+		pathname: path.join(__dirname, 'html/index.html'),
+		protocol:'file:',
+		slashes: true
+	}));
+
 
 	// Wait for page contents to load before displaying electron window
 	mainWindow.once('ready-to-show', () => {
@@ -94,7 +127,11 @@ function createAddWindow() {
 	});
 
 	//Load html into window
-	addWindow.loadURL(`file://${__dirname}/html/addSubreddit.html`);
+	addWindow.loadURL(url.format({
+		pathname: path.join(__dirname, 'html/addSubreddit.html'),
+		protocol:'file:',
+		slashes: true
+	}));
 
 	// Gargage collection handle
 	addWindow.on('close', () => {
