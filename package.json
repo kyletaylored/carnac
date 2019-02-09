@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "rebuild": "electron-builder install-app-deps",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"CARNAC\"",
     "package-linux": "electron-packager . --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/icon.png --prune=true --out=release-builds"
@@ -13,8 +14,12 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/language": "^2.0.1",
+    "bootstrap": "^4.2.1",
     "dotenv": "^6.2.0",
     "electron": "^4.0.3",
+    "jquery": "^3.3.1",
+    "nedb": "^1.8.0",
+    "popper.js": "^1.14.7",
     "snoowrap": "^1.15.2"
   },
   "devDependencies": {

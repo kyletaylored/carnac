@@ -1,5 +1,6 @@
 /* ------------------- Includes -------------------*/
 const electron = require('electron');
+const Datastore = require('nedb');
 const url = require('url');
 const path = require('path');
 const snoowrap = require('snoowrap');
@@ -7,9 +8,14 @@ const snoowrap = require('snoowrap');
 require('dotenv').config();
 
 /* ------------- Variables & Constants  ------------- */
-//let webApp = express();
 
+// Expose electron classes
 const {app, BrowserWindow, Menu, ipcMain} = electron;
+
+// Global variable for main electron window
+let mainWindow;
+
+// Define reddit api credentials
 let r = new snoowrap({
 	userAgent: 'reddit-bot-node',
 	clientId: process.env.CLIENT_ID,
@@ -18,23 +24,74 @@ let r = new snoowrap({
 	password: process.env.REDDIT_PASS
 });
 
+
+////////////////////////////////////////////
+//////////Testing data store creation///////
+// let users = new Datastore({ 
+// 	filename: 'db/carnac-data-test.db', 
+// 	autoload: true,
+// 	onload: err => {
+// 		if (err) {
+// 			console.error('Error while loading the db!', err);
+// 		}
+// 	}
+// });
+
+/////////////////////////////////////////////
+//////////Testing data insertion/////////////
+// var scott = {  
+// 	name: 'Scott',
+// 	twitter: '@ScottWRobinson'
+// };
+
+// users.insert(scott, function(err, doc) {  
+// 	console.log('Inserted', doc.name, 'with ID', doc._id);
+// });
+
+/////////////////////////////////////////////
+//////////Testing data query/////////////////
+// users.findOne({ twitter: '@ScottWRobinson' }, function(err, doc) {  
+// 	console.log('Found user:', doc.name);
+// });
+
+/////////////////////////////////////////////
+//////////Testing data deletion//////////////
+// users.remove({ name: { $regex: /^Scott/ } }, function(err, numDeleted) {  
+// 	console.log('Deleted', numDeleted, 'user(s)');
+// });
+
+let users = new Datastore({ 
+	filename: 'db/carnac-data.db', 
+	autoload: true,
+	onload: err => {
+		if (err) {
+			console.error('Error while loading the db!', err);
+		}
+	}
+});
+
 /* ------------------ config ------------------ */
 
-// Set ENV
+// Set ENV for production when ready
 //process.env.NODE_ENV = 'production';
-
-let mainWindow;
 
 
 /* ------------------ { MAIN } ------------------ */
 
+
+
 // Listen for the app to be ready
-app.on('ready', function() {
-	//Create new Browser
+app.on('ready', () => {
+	// Create main electron window
 	mainWindow = new BrowserWindow({
 		width: 1200,
 		height: 800,
-		title: "CARNAC"
+		title: "CARNAC",
+		show: false
+	});
+	// Quit app when closed
+	mainWindow.on('closed', () => { 
+		app.quit();
 	});
 
 	//Load html into window
@@ -43,17 +100,25 @@ app.on('ready', function() {
 		protocol:'file:',
 		slashes: true
 	}));
-	// Quit app when closed
-	mainWindow.on('closed', function () { 
-		app.quit();
+
+
+	// Wait for page contents to load before displaying electron window
+	mainWindow.once('ready-to-show', () => {
+		mainWindow.show()
 	});
+
+	// Listen for page to be ready in mainWindow
+	// ipcMain.on("mainWindowLoaded", () => {
+
+	// });
+
 	//Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	Menu.setApplicationMenu(mainMenu);
 });
 
 // Handle create add window
-function createAddWindow(){
+function createAddWindow() {
 	//Create new Browser
 	addWindow = new BrowserWindow({
 		width: 300,
@@ -69,12 +134,12 @@ function createAddWindow(){
 	}));
 
 	// Gargage collection handle
-	addWindow.on('close', function(){
+	addWindow.on('close', () => {
 		addWindow = null;
 	});
 }
 
-// // Catch item:add
+// // Template for Catching ipcMain item:add
 // ipcMain.on('item:add', function(e, item){
 // 	console.log(item);
 // 	mainWindow.webContents.send('item:add', item);
@@ -82,7 +147,7 @@ function createAddWindow(){
 // });
 
 // Catch item:add using snoowrap
-ipcMain.on('item:add', function(e, item) {
+ipcMain.on('item:add', (e, item) => {
 	
 	//Parse contents of POST request and extract subreddit name
 	// let name = req.body.subreddit;
@@ -127,30 +192,32 @@ const mainMenuTemplate = [
 		]
 	}];
 	
-	// If mac, add empty object to menu
-	if (process.platform == 'darwin') {
-		mainMenuTemplate.unshift({});
-	}
-	
-	//Add developer tools item if not in production
-	if (process.env.NODE_ENV !== 'production') {
-		mainMenuTemplate.push({
-			label: 'Developer Tools',
-			submenu:[
-				{
-					label: 'Toggle DevTools',
-					accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
-					click(item, focusedWindow){
-						focusedWindow.toggleDevTools();
-					}
-				},
-				{
-					role: 'reload'
-				}
-			]
-		});
-	}
+// If mac, add empty object to menu
+if (process.platform == 'darwin') {
+	mainMenuTemplate.unshift({});
+}
 
+//Add developer tools item if not in production
+if (process.env.NODE_ENV !== 'production') {
+	mainMenuTemplate.push({
+		label: 'Developer Tools',
+		submenu:[
+			{
+				label: 'Toggle DevTools',
+				accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
+				click(item, focusedWindow){
+					focusedWindow.toggleDevTools();
+				}
+			},
+			{
+				role: 'reload'
+			}
+		]
+	});
+}
+
+
+//////////////////////////////////////////////////////////////////////
 // webApp.use(bodyParser.urlencoded({ extended: false }));
 // webApp.post('/api/subreddit-info', (req, res) => {
 	
