@@ -1,5 +1,6 @@
 /* ------------------- Includes -------------------*/
 const electron = require('electron');
+const Datastore = require('nedb');
 const url = require('url');
 const path = require('path');
 const snoowrap = require('snoowrap');
@@ -8,7 +9,13 @@ require('dotenv').config();
 
 /* ------------- Variables & Constants  ------------- */
 
+// Expose electron classes
 const {app, BrowserWindow, Menu, ipcMain} = electron;
+
+// Global variable for main electron window
+let mainWindow;
+
+// Define reddit api credentials
 let r = new snoowrap({
 	userAgent: 'reddit-bot-node',
 	clientId: process.env.CLIENT_ID,
@@ -17,26 +24,43 @@ let r = new snoowrap({
 	password: process.env.REDDIT_PASS
 });
 
+let users = new Datastore({ filename: 'db/carnac-data.db', autoload: true});
+
+var scott = {  
+	name: 'Scott',
+	twitter: '@ScottWRobinson'
+};
+
+users.insert(scott, function(err, doc) {  
+	console.log('Inserted', doc.name, 'with ID', doc._id);
+});
+
+
+
+
+// db.loadDatabase( (err) => {
+
+// });
+
 /* ------------------ config ------------------ */
 
-// Set ENV
+// Set ENV for production when ready
 //process.env.NODE_ENV = 'production';
 
 
 /* ------------------ { MAIN } ------------------ */
 
-let mainWindow;
+
 
 // Listen for the app to be ready
 app.on('ready', () => {
-	//Create new Browser
+	// Create main electron window
 	mainWindow = new BrowserWindow({
 		width: 1200,
 		height: 800,
 		title: "CARNAC",
 		show: false
 	});
-
 	// Quit app when closed
 	mainWindow.on('closed', () => { 
 		app.quit();
@@ -54,8 +78,6 @@ app.on('ready', () => {
 	// ipcMain.on("mainWindowLoaded", () => {
 
 	// });
-
-	
 
 	//Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
