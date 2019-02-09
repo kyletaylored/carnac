@@ -1,6 +1,5 @@
 /* ------------------- Includes -------------------*/
 const electron = require('electron');
-const sqlite = require('sqlite3');
 const url = require('url');
 const path = require('path');
 const snoowrap = require('snoowrap');
@@ -8,7 +7,6 @@ const snoowrap = require('snoowrap');
 require('dotenv').config();
 
 /* ------------- Variables & Constants  ------------- */
-//let webApp = express();
 
 const {app, BrowserWindow, Menu, ipcMain} = electron;
 let r = new snoowrap({
@@ -24,37 +22,48 @@ let r = new snoowrap({
 // Set ENV
 //process.env.NODE_ENV = 'production';
 
-let mainWindow;
-
 
 /* ------------------ { MAIN } ------------------ */
 
+let mainWindow;
+
 // Listen for the app to be ready
-app.on('ready', function() {
+app.on('ready', () => {
 	//Create new Browser
 	mainWindow = new BrowserWindow({
 		width: 1200,
 		height: 800,
-		title: "CARNAC"
+		title: "CARNAC",
+		show: false
+	});
+
+	// Quit app when closed
+	mainWindow.on('closed', () => { 
+		app.quit();
 	});
 
 	//Load html into window
-	mainWindow.loadURL(url.format({
-		pathname: path.join(__dirname, 'html/index.html'),
-		protocol:'file:',
-		slashes: true
-	}));
-	// Quit app when closed
-	mainWindow.on('closed', function () { 
-		app.quit();
+	mainWindow.loadURL(`file://${__dirname}/html/index.html`);
+
+	// Wait for page contents to load before displaying electron window
+	mainWindow.once('ready-to-show', () => {
+		mainWindow.show()
 	});
+
+	// Listen for page to be ready in mainWindow
+	// ipcMain.on("mainWindowLoaded", () => {
+
+	// });
+
+	
+
 	//Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	Menu.setApplicationMenu(mainMenu);
 });
 
 // Handle create add window
-function createAddWindow(){
+function createAddWindow() {
 	//Create new Browser
 	addWindow = new BrowserWindow({
 		width: 300,
@@ -63,14 +72,10 @@ function createAddWindow(){
 	});
 
 	//Load html into window
-	addWindow.loadURL(url.format({
-		pathname: path.join(__dirname, 'html/addSubreddit.html'),
-		protocol:'file:',
-		slashes: true
-	}));
+	addWindow.loadURL(`file://${__dirname}/html/addSubreddit.html`);
 
 	// Gargage collection handle
-	addWindow.on('close', function(){
+	addWindow.on('close', () => {
 		addWindow = null;
 	});
 }
@@ -83,7 +88,7 @@ function createAddWindow(){
 // });
 
 // Catch item:add using snoowrap
-ipcMain.on('item:add', function(e, item) {
+ipcMain.on('item:add', (e, item) => {
 	
 	//Parse contents of POST request and extract subreddit name
 	// let name = req.body.subreddit;
@@ -151,7 +156,7 @@ const mainMenuTemplate = [
 			]
 		});
 	}
-
+//////////////////////////////////////////////////////////////////////
 // webApp.use(bodyParser.urlencoded({ extended: false }));
 // webApp.post('/api/subreddit-info', (req, res) => {
 	
