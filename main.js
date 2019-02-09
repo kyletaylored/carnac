@@ -139,7 +139,7 @@ function createAddWindow() {
 	});
 }
 
-// // Catch item:add
+// // Template for Catching ipcMain item:add
 // ipcMain.on('item:add', function(e, item){
 // 	console.log(item);
 // 	mainWindow.webContents.send('item:add', item);
@@ -192,29 +192,31 @@ const mainMenuTemplate = [
 		]
 	}];
 	
-	// If mac, add empty object to menu
-	if (process.platform == 'darwin') {
-		mainMenuTemplate.unshift({});
-	}
-	
-	//Add developer tools item if not in production
-	if (process.env.NODE_ENV !== 'production') {
-		mainMenuTemplate.push({
-			label: 'Developer Tools',
-			submenu:[
-				{
-					label: 'Toggle DevTools',
-					accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
-					click(item, focusedWindow){
-						focusedWindow.toggleDevTools();
-					}
-				},
-				{
-					role: 'reload'
+// If mac, add empty object to menu
+if (process.platform == 'darwin') {
+	mainMenuTemplate.unshift({});
+}
+
+//Add developer tools item if not in production
+if (process.env.NODE_ENV !== 'production') {
+	mainMenuTemplate.push({
+		label: 'Developer Tools',
+		submenu:[
+			{
+				label: 'Toggle DevTools',
+				accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
+				click(item, focusedWindow){
+					focusedWindow.toggleDevTools();
 				}
-			]
-		});
-	}
+			},
+			{
+				role: 'reload'
+			}
+		]
+	});
+}
+
+
 //////////////////////////////////////////////////////////////////////
 // webApp.use(bodyParser.urlencoded({ extended: false }));
 // webApp.post('/api/subreddit-info', (req, res) => {
