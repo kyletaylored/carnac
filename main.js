@@ -1,5 +1,6 @@
 /* ------------------- Includes -------------------*/
 const electron = require('electron');
+const sqlite = require('sqlite3');
 const url = require('url');
 const path = require('path');
 const snoowrap = require('snoowrap');
