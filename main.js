@@ -5,7 +5,6 @@ const url = require('url');
 const path = require('path');
 let getJSON = require('get-json');
 // const bodyParser = require('body-parser');
-require('dotenv').config();
 
 /* ------------- Variables & Constants  ------------- */
 
