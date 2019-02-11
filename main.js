@@ -3,7 +3,7 @@ const electron = require('electron');
 const Datastore = require('nedb');
 const url = require('url');
 const path = require('path');
-const snoowrap = require('snoowrap');
+let getJSON = require('get-json');
 // const bodyParser = require('body-parser');
 require('dotenv').config();
 
@@ -14,15 +14,6 @@ const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 // Global variable for main electron window
 let mainWindow;
-
-// Define reddit api credentials
-let r = new snoowrap({
-	userAgent: 'reddit-bot-node',
-	clientId: process.env.CLIENT_ID,
-	clientSecret: process.env.CLIENT_SECRET,
-	username: process.env.REDDIT_USER,
-	password: process.env.REDDIT_PASS
-});
 
 
 ////////////////////////////////////////////
@@ -60,15 +51,7 @@ let r = new snoowrap({
 // 	console.log('Deleted', numDeleted, 'user(s)');
 // });
 
-let users = new Datastore({ 
-	filename: 'db/carnac-data.db', 
-	autoload: true,
-	onload: err => {
-		if (err) {
-			console.error('Error while loading the db!', err);
-		}
-	}
-});
+
 
 /* ------------------ config ------------------ */
 
@@ -78,7 +61,25 @@ let users = new Datastore({
 
 /* ------------------ { MAIN } ------------------ */
 
+let db_subreddit = new Datastore({ 
+	filename: 'db/subreddit.db', 
+	autoload: true,
+	onload: err => {
+		if (err) {
+			console.error('Error while loading the db!', err);
+		}
+	}
+});
 
+let db_metadata = new Datastore({ 
+	filename: 'db/metadata.db', 
+	autoload: true,
+	onload: err => {
+		if (err) {
+			console.error('Error while loading the db!', err);
+		}
+	}
+});
 
 // Listen for the app to be ready
 app.on('ready', () => {
@@ -115,6 +116,32 @@ app.on('ready', () => {
 	//Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	Menu.setApplicationMenu(mainMenu);
+
+	
+
+
+
+	///////////Testing RSS Feed///////////////
+	// let RssFeedEmitter = require('rss-feed-emitter');
+	// let feeder = new RssFeedEmitter();
+
+	// feeder.add({
+	// 	url: 'https://www.reddit.com/r/Linux.rss',
+	// 	refresh: 2000
+	// });
+
+	// feeder.on('new-item', function(item) {
+	// 	console.log(item);
+	// })
+
+	// feeder.list();
+	// feeder.remove('https://www.reddit.com/r/Linux.rss');
+	// feeder.destroy();
+		
+	
+
+
+
 });
 
 // Handle create add window
@@ -147,21 +174,40 @@ function createAddWindow() {
 // });
 
 // Catch item:add using snoowrap
-ipcMain.on('item:add', (e, item) => {
+ipcMain.on('item:add', (e, sub) => {
 	
-	//Parse contents of POST request and extract subreddit name
-	// let name = req.body.subreddit;
-	//let count = parseInt(req.body.number, 10);
+	let newSub = {
+		subreddit_name: sub
+	}
 
-	let name = item;
-	
-	console.log(name);
-
-	r.getSubreddit(name).getHot().map(post => post.title).then( (results) => {
-		mainWindow.webContents.send('item:add', results);
+	db_subreddit.insert(newSub, function(err, doc) {  
+		console.log('Inserted', doc.subreddit_name, 'with ID', doc._id);
 	});
+	
 
-	// mainWindow.webContents.send('item:add', item);
+
+	//////////USE LATER FOR COMMENT METADATA//////////////////
+	// let request = 'https://www.reddit.com/r/' + sub + '.json';
+	// getJSON(request)
+    // .then(function(response) {
+
+	// 	for (i = 0; i < response.data.children.length; i++) {
+	// 		let postData = {
+	// 			subreddit: response.data.children[i].data.subreddit,
+	// 			selftext: response.data.children[i].data.selftext,
+	// 			title: response.data.children[i].data.title,
+	// 			score: response.data.children[i].data.score,
+	// 			id: response.data.children[i].data.id
+	// 		}
+	// 		db_metadata.insert(postData, function(err, doc) {  
+	// 			console.log('Inserted', doc.title, 'with ID', doc._id);
+	// 		});
+	// 		mainWindow.webContents.send('item:add', postData.title);
+	// 	}
+	// }).catch(function(error) {
+    //   console.log(error);
+    // });
+
 	addWindow.close();
 });
 
@@ -215,27 +261,3 @@ if (process.env.NODE_ENV !== 'production') {
 		]
 	});
 }
-
-
-//////////////////////////////////////////////////////////////////////
-// webApp.use(bodyParser.urlencoded({ extended: false }));
-// webApp.post('/api/subreddit-info', (req, res) => {
-	
-// 	//Parse contetns of POST request and extract subreddit name
-// 	let name = req.body.subreddit;
-// 	let count = parseInt(req.body.number, 10);
-	
-// 	console.log(name);
-// 	console.log(count);
-
-// 	r.getSubreddit(name).getHot({limit: count}).map(post => post.title).then( (results) => {
-// 		res.send(results);
-// 	});
-
-// });
-
-// // Set server variable to listen on port 3000
-// let server = webApp.listen(3000, () => {
-// 	let port = server.address().port;
-// 	console.log('Node Web Server started at http://localhost:%s', port);
-// });

@@ -15,12 +15,12 @@
   "dependencies": {
     "@google-cloud/language": "^2.0.1",
     "bootstrap": "^4.2.1",
-    "dotenv": "^6.2.0",
     "electron": "^4.0.3",
+    "get-json": "^1.0.1",
     "jquery": "^3.3.1",
     "nedb": "^1.8.0",
     "popper.js": "^1.14.7",
-    "snoowrap": "^1.15.2"
+    "rss-feed-emitter": "^2.0.1"
   },
   "devDependencies": {
     "body-parser": "^1.18.3",
