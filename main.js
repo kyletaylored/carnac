@@ -4,7 +4,6 @@ const Datastore = require('nedb');
 const url = require('url');
 const path = require('path');
 let getJSON = require('get-json');
-// const bodyParser = require('body-parser');
 
 /* ------------- Variables & Constants  ------------- */
 
@@ -49,8 +48,6 @@ let mainWindow;
 // users.remove({ name: { $regex: /^Scott/ } }, function(err, numDeleted) {  
 // 	console.log('Deleted', numDeleted, 'user(s)');
 // });
-
-
 
 /* ------------------ config ------------------ */
 
@@ -115,31 +112,6 @@ app.on('ready', () => {
 	//Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	Menu.setApplicationMenu(mainMenu);
-
-	
-
-
-
-	///////////Testing RSS Feed///////////////
-	// let RssFeedEmitter = require('rss-feed-emitter');
-	// let feeder = new RssFeedEmitter();
-
-	// feeder.add({
-	// 	url: 'https://www.reddit.com/r/Linux.rss',
-	// 	refresh: 2000
-	// });
-
-	// feeder.on('new-item', function(item) {
-	// 	console.log(item);
-	// })
-
-	// feeder.list();
-	// feeder.remove('https://www.reddit.com/r/Linux.rss');
-	// feeder.destroy();
-		
-	
-
-
 
 });
 
