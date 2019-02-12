@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A magic machine that runs a trend analysis on selected Reddit subs.",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyletaylored/carnac.git"
+  },
   "scripts": {
     "start": "electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
@@ -18,11 +22,9 @@
     "get-json": "^1.0.1",
     "jquery": "^3.3.1",
     "nedb": "^1.8.0",
-    "popper.js": "^1.14.7",
-    "rss-feed-emitter": "^2.0.1"
+    "popper.js": "^1.14.7"
   },
   "devDependencies": {
-    "body-parser": "^1.18.3",
     "electron-packager": "^13.0.1"
   }
 }
