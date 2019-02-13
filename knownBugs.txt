@@ -1,0 +1,15 @@
+////////WINDOWS ERRORS////////////
+
+
+////////LINUX ERRORS////////////
+
+
+////////MAC ERRORS////////////
+Uncaught Exception:
+TypeError: Invalid template for MenuItem: must have at least one of label, role or type
+    at Function.Menu.buildFromTemplate (/Users/ecc0077/Documents/GitHub/carnac/node_modules/electron/dist/Electron.app/Contents/Resources/electron.asar/browser/api/menu.js:164:11)
+    at App.app.on (/Users/ecc0077/Documents/GitHub/carnac/main.js:113:24)
+    at App.emit (events.js:187:15)
+
+
+

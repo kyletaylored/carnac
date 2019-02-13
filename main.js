@@ -1,11 +1,10 @@
 /* ------------------- Includes -------------------*/
 const electron = require('electron');
-const Datastore = require('nedb');
 const url = require('url');
 const path = require('path');
-const snoowrap = require('snoowrap');
-// const bodyParser = require('body-parser');
-require('dotenv').config();
+const getJSON = require('get-json');
+const db = require('./js/db_functions.js');
+const get = require('./js/get_functions.js');
 
 /* ------------- Variables & Constants  ------------- */
 
@@ -15,61 +14,6 @@ const {app, BrowserWindow, Menu, ipcMain} = electron;
 // Global variable for main electron window
 let mainWindow;
 
-// Define reddit api credentials
-let r = new snoowrap({
-	userAgent: 'reddit-bot-node',
-	clientId: process.env.CLIENT_ID,
-	clientSecret: process.env.CLIENT_SECRET,
-	username: process.env.REDDIT_USER,
-	password: process.env.REDDIT_PASS
-});
-
-
-////////////////////////////////////////////
-//////////Testing data store creation///////
-// let users = new Datastore({ 
-// 	filename: 'db/carnac-data-test.db', 
-// 	autoload: true,
-// 	onload: err => {
-// 		if (err) {
-// 			console.error('Error while loading the db!', err);
-// 		}
-// 	}
-// });
-
-/////////////////////////////////////////////
-//////////Testing data insertion/////////////
-// var scott = {  
-// 	name: 'Scott',
-// 	twitter: '@ScottWRobinson'
-// };
-
-// users.insert(scott, function(err, doc) {  
-// 	console.log('Inserted', doc.name, 'with ID', doc._id);
-// });
-
-/////////////////////////////////////////////
-//////////Testing data query/////////////////
-// users.findOne({ twitter: '@ScottWRobinson' }, function(err, doc) {  
-// 	console.log('Found user:', doc.name);
-// });
-
-/////////////////////////////////////////////
-//////////Testing data deletion//////////////
-// users.remove({ name: { $regex: /^Scott/ } }, function(err, numDeleted) {  
-// 	console.log('Deleted', numDeleted, 'user(s)');
-// });
-
-let users = new Datastore({ 
-	filename: 'db/carnac-data.db', 
-	autoload: true,
-	onload: err => {
-		if (err) {
-			console.error('Error while loading the db!', err);
-		}
-	}
-});
-
 /* ------------------ config ------------------ */
 
 // Set ENV for production when ready
@@ -77,8 +21,6 @@ let users = new Datastore({
 
 
 /* ------------------ { MAIN } ------------------ */
-
-
 
 // Listen for the app to be ready
 app.on('ready', () => {
@@ -115,6 +57,7 @@ app.on('ready', () => {
 	//Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	Menu.setApplicationMenu(mainMenu);
+
 });
 
 // Handle create add window
@@ -147,21 +90,19 @@ function createAddWindow() {
 // });
 
 // Catch item:add using snoowrap
-ipcMain.on('item:add', (e, item) => {
+ipcMain.on('item:add', (e, userInput) => {
 	
-	//Parse contents of POST request and extract subreddit name
-	// let name = req.body.subreddit;
-	//let count = parseInt(req.body.number, 10);
+	//create JSON object to prepare for insert
+	let data = {
+		subreddit: userInput,
+		type: 'subreddit'
+	}
 
-	let name = item;
+	db.storeData(data);
+
+
 	
-	console.log(name);
 
-	r.getSubreddit(name).getHot().map(post => post.title).then( (results) => {
-		mainWindow.webContents.send('item:add', results);
-	});
-
-	// mainWindow.webContents.send('item:add', item);
 	addWindow.close();
 });
 
@@ -215,27 +156,3 @@ if (process.env.NODE_ENV !== 'production') {
 		]
 	});
 }
-
-
-//////////////////////////////////////////////////////////////////////
-// webApp.use(bodyParser.urlencoded({ extended: false }));
-// webApp.post('/api/subreddit-info', (req, res) => {
-	
-// 	//Parse contetns of POST request and extract subreddit name
-// 	let name = req.body.subreddit;
-// 	let count = parseInt(req.body.number, 10);
-	
-// 	console.log(name);
-// 	console.log(count);
-
-// 	r.getSubreddit(name).getHot({limit: count}).map(post => post.title).then( (results) => {
-// 		res.send(results);
-// 	});
-
-// });
-
-// // Set server variable to listen on port 3000
-// let server = webApp.listen(3000, () => {
-// 	let port = server.address().port;
-// 	console.log('Node Web Server started at http://localhost:%s', port);
-// });
