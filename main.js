@@ -1,9 +1,10 @@
 /* ------------------- Includes -------------------*/
 const electron = require('electron');
-const Datastore = require('nedb');
 const url = require('url');
 const path = require('path');
-let getJSON = require('get-json');
+const getJSON = require('get-json');
+const db = require('./js/db_functions.js');
+const get = require('./js/get_functions.js');
 
 /* ------------- Variables & Constants  ------------- */
 
@@ -13,42 +14,6 @@ const {app, BrowserWindow, Menu, ipcMain} = electron;
 // Global variable for main electron window
 let mainWindow;
 
-
-////////////////////////////////////////////
-//////////Testing data store creation///////
-// let users = new Datastore({ 
-// 	filename: 'db/carnac-data-test.db', 
-// 	autoload: true,
-// 	onload: err => {
-// 		if (err) {
-// 			console.error('Error while loading the db!', err);
-// 		}
-// 	}
-// });
-
-/////////////////////////////////////////////
-//////////Testing data insertion/////////////
-// var scott = {  
-// 	name: 'Scott',
-// 	twitter: '@ScottWRobinson'
-// };
-
-// users.insert(scott, function(err, doc) {  
-// 	console.log('Inserted', doc.name, 'with ID', doc._id);
-// });
-
-/////////////////////////////////////////////
-//////////Testing data query/////////////////
-// users.findOne({ twitter: '@ScottWRobinson' }, function(err, doc) {  
-// 	console.log('Found user:', doc.name);
-// });
-
-/////////////////////////////////////////////
-//////////Testing data deletion//////////////
-// users.remove({ name: { $regex: /^Scott/ } }, function(err, numDeleted) {  
-// 	console.log('Deleted', numDeleted, 'user(s)');
-// });
-
 /* ------------------ config ------------------ */
 
 // Set ENV for production when ready
@@ -56,26 +21,6 @@ let mainWindow;
 
 
 /* ------------------ { MAIN } ------------------ */
-
-let db_subreddit = new Datastore({ 
-	filename: 'db/subreddit.db', 
-	autoload: true,
-	onload: err => {
-		if (err) {
-			console.error('Error while loading the db!', err);
-		}
-	}
-});
-
-let db_metadata = new Datastore({ 
-	filename: 'db/metadata.db', 
-	autoload: true,
-	onload: err => {
-		if (err) {
-			console.error('Error while loading the db!', err);
-		}
-	}
-});
 
 // Listen for the app to be ready
 app.on('ready', () => {
@@ -145,39 +90,18 @@ function createAddWindow() {
 // });
 
 // Catch item:add using snoowrap
-ipcMain.on('item:add', (e, sub) => {
+ipcMain.on('item:add', (e, userInput) => {
 	
-	let newSub = {
-		subreddit_name: sub
+	//create JSON object to prepare for insert
+	let data = {
+		subreddit: userInput,
+		type: 'subreddit'
 	}
 
-	db_subreddit.insert(newSub, function(err, doc) {  
-		console.log('Inserted', doc.subreddit_name, 'with ID', doc._id);
-	});
+	db.storeData(data);
+
+
 	
-
-
-	//////////USE LATER FOR COMMENT METADATA//////////////////
-	// let request = 'https://www.reddit.com/r/' + sub + '.json';
-	// getJSON(request)
-    // .then(function(response) {
-
-	// 	for (i = 0; i < response.data.children.length; i++) {
-	// 		let postData = {
-	// 			subreddit: response.data.children[i].data.subreddit,
-	// 			selftext: response.data.children[i].data.selftext,
-	// 			title: response.data.children[i].data.title,
-	// 			score: response.data.children[i].data.score,
-	// 			id: response.data.children[i].data.id
-	// 		}
-	// 		db_metadata.insert(postData, function(err, doc) {  
-	// 			console.log('Inserted', doc.title, 'with ID', doc._id);
-	// 		});
-	// 		mainWindow.webContents.send('item:add', postData.title);
-	// 	}
-	// }).catch(function(error) {
-    //   console.log(error);
-    // });
 
 	addWindow.close();
 });
