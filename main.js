@@ -35,18 +35,15 @@ app.on('ready', () => {
 	mainWindow.on('closed', () => { 
 		app.quit();
 	});
-
 	//Load html into window
 	mainWindow.loadURL(url.format({
 		pathname: path.join(__dirname, 'html/index.html'),
 		protocol:'file:',
 		slashes: true
 	}));
-
-
 	// Wait for page contents to load before displaying electron window
 	mainWindow.once('ready-to-show', () => {
-		mainWindow.show()
+		mainWindow.show();
 	});
 
 	// Listen for page to be ready in mainWindow
@@ -57,7 +54,7 @@ app.on('ready', () => {
 	//Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	Menu.setApplicationMenu(mainMenu);
-
+	
 });
 
 // Handle create add window
@@ -89,21 +86,37 @@ function createAddWindow() {
 // 	// addWindow.close();
 // });
 
-// Catch item:add using snoowrap
+// Catch item:add and store subreddit information
 ipcMain.on('item:add', (e, userInput) => {
 	
 	//create JSON object to prepare for insert
-	let data = {
-		subreddit: userInput,
-		type: 'subreddit'
+	
+	let subreddit_db = db.open('subreddits');
+	db.storeSubreddit(subreddit_db, userInput);
+
+	// Close pop-up
+	addWindow.close();
+
+	let subreddits = db.querySubreddits(subreddit_db);
+	console.log(subreddits);
+	
+	// Fetch data and store it
+	// // Test getting data and storing in database
+	let post_db = db.open('posts');
+	try {
+		get.posts(userInput)
+		.then( (postDataArray) => {
+			console.log('Testing storeData');
+			db.storePosts(post_db, postDataArray);
+		}).catch(function(error) {
+				console.log(error);
+		});
+	} catch(error) {
+		console.log(error);
 	}
 
-	db.storeData(data);
 
 
-	
-
-	addWindow.close();
 });
 
 // Create menu template

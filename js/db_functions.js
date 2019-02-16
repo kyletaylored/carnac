@@ -1,8 +1,9 @@
+// Import neDB module
+const Datastore = require('nedb');
+
 module.exports = {
     // Function to open database
     open: (db_name) => {
-        // Import neDB module
-        const Datastore = require('nedb');
         // Create database object 
         let db_object_instance = new Datastore({     
             filename: 'db/'+ db_name + '.db', 
@@ -18,7 +19,7 @@ module.exports = {
     // Function to insert into database
     insert: (db_object_instance, jsonObject ) => {
         // Insert object into specified database
-        db_object_instance.insert(jsonObject, function(err, doc) {  
+        db_object_instance.insert(jsonObject, (err, doc) => {  
             console.log('Inserted', doc.subreddit, 'of type', doc.type, 'document data with ID', doc._id);
         });
     },
@@ -45,35 +46,40 @@ module.exports = {
         // 	console.log('Deleted', numDeleted, 'user(s)');
         // });
     },
-    // Function to add subreddit to subreddit.db
-    storeData: (jsonObject) => {
-        // Determine the type of JSON data and store appropriately
-        if (jsonObject.type == 'subreddit') {
-            let db_name = 'subreddit';
-            // Open database with specified name and assign return object to variable "db"
-            let db = module.exports.open(db_name);
-            // Insert into db
-            module.exports.insert(db, jsonObject);
-        } 
-        else if (jsonObject.type == 'post') {
-            let db_name = jsonObject.subreddit + '.posts';
-            // Open database with specified name and assign return object to variable "db"
-            let db = module.exports.open(db_name);
-            // Insert into db
-            module.exports.insert(db, jsonObject);
+    storeSubreddit: (db_object_instance, userInput) => {
+        //create JSON object to prepare for insert
+        let data = {
+            subreddit: userInput,
+            type: 'subreddit'
         }
-        else if (jsonObject.type == 'comment') {
-            let db_name = jsonObject.subreddit + '.comments';
-            // Open database with specified name and assign return object to variable "db"
-            let db = module.exports. open(db_name);
+        // Insert into db
+        module.exports.insert(db_object_instance, data);
+    },
+    storePosts: (db_object_instance, jsonArray) => {
+        // Iterate through jsonArray
+        for (i in jsonArray) {
+            // Maybe check before inserting to reduce duplicate data
+
             // Insert into db
-            module.exports.insert(db, jsonObject);
+            module.exports.insert(db_object_instance, jsonArray[i]);
         }
-        else { 
-            console.log("Database insert failure: Invalid or missing jsonObject type!")
+    },
+    storeComments: (db_object_instance, jsonArray) => {
+        // Open database with specified name and assign return object to variable "db"
+        let db = module.exports.open('comments');
+                    
+        // Iterate through jsonArray
+        for (i in jsonArray) {
+            // Maybe check before inserting to reduce duplicate data
+
+            // Insert into db
+            module.exports.insert(db_object_instance, jsonArray[i]);
         }
-        
-        
+    },
+    querySubreddits: (db_object_instance) => {
+        db_object_instance.find({}, (err, docs) => {
+            return docs;
+        });
     }
 }
 

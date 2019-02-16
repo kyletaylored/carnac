@@ -1,57 +1,63 @@
+const getJSON = require('get-json');
+
 module.exports = {
     // Function to retreive subreddit metadata, return JSON object
-    subreddit: (subreddit_name) => {
-        const getJSON = require('get-json');
-        //////////USE LATER FOR COMMENT METADATA//////////////////
-        let request = 'https://www.reddit.com/r/' + subreddit_name + '.json';
-        getJSON(request)
-        .then(function(response) {
-
+    subreddit: async (subreddit_name) => {
+        // Make JSON request using user-defined subreddit
+        let url = 'https://www.reddit.com/r/' + subreddit_name + '.json';
+        try {
+            let response = await getJSON(url);
+            let postDataArray = [];
         	for (i = 0; i < response.data.children.length; i++) {
-        		let postData = {
-        			subreddit: response.data.children[i].data.subreddit,
-        			selftext: response.data.children[i].data.selftext,
-        			title: response.data.children[i].data.title,
-        			score: response.data.children[i].data.score,
-                    id: response.data.children[i].data.id,
-                    type: 'subreddit'
+                // Define JSON object for post data
+                let postData = {
+        			// subreddit: response.data.children[i].data.subreddit,
+        			// selftext: response.data.children[i].data.selftext,
+        			// title: response.data.children[i].data.title,
+        			// score: response.data.children[i].data.score,
+                    // id: response.data.children[i].data.id,
+                    // type: 'subreddit'
         		}
-        		db_metadata.insert(postData, function(err, doc) {  
-        			console.log('Inserted', doc.title, 'with ID', doc._id);
-        		});
-        	}
-        }).catch(function(error) {
-          console.log(error);
-        });
+                // Append post data to array
+                postDataArray[i] = postData;
+            }
+            // Return JSON results as an array
+            return postDataArray;
+        } catch(error) {
+            console.log(error);
+        }
     },
     // Function to retreive post metadata, return JSON object
-    posts: (id) => {
-        const getJSON = require('get-json');
-        let request = 'https://www.reddit.com/r/' + subreddit_name + '.json';
-        getJSON(request)
-        .then(function(response) {
-
+    posts: async (id) => {
+        // Make JSON request using user-defined subreddit
+        let url = 'https://www.reddit.com/r/' + id + '.json?limit=100';
+        try {
+            let response = await getJSON(url);
+            let postDataArray = [];
         	for (i = 0; i < response.data.children.length; i++) {
-        		let postData = {
+                // Define JSON object for post data
+                let postData = {
         			subreddit: response.data.children[i].data.subreddit,
         			selftext: response.data.children[i].data.selftext,
         			title: response.data.children[i].data.title,
         			score: response.data.children[i].data.score,
                     id: response.data.children[i].data.id,
-                    type: 'posts'
+                    type: 'post'
         		}
-        		db_metadata.insert(postData, function(err, doc) {  
-        			console.log('Inserted', doc.title, 'with ID', doc._id);
-        		});
-        	}
-        }).catch(function(error) {
-          console.log(error);
-        });
+                // Append post data to array
+                postDataArray[i] = postData;
+            }
+            // Return JSON results as an array
+            return postDataArray;
+        } catch(error) {
+            console.log(error);
+        }
 
+        
     },
     // Function to retreive comment metadata, return JSON object
-    comments: (id) => {
-        const getJSON = require('get-json');
+    comments: async (id) => {
+        
     }
 }
 
