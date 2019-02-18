@@ -19,7 +19,6 @@ let mainWindow;
 // Set ENV for production when ready
 //process.env.NODE_ENV = 'production';
 
-
 /* ------------------ { MAIN } ------------------ */
 
 // Listen for the app to be ready
@@ -86,86 +85,39 @@ function createAddWindow() {
 // 	// addWindow.close();
 // });
 
-// Catch item:add and store subreddit information
-ipcMain.on('item:add', (e, userInput) => {
+// Catch add:subreddit and store subreddit information
+ipcMain.on('add:subreddit', (e, userInput) => {
 	
 	//create JSON object to prepare for insert
-	
 	let subreddit_db = db.open('subreddits');
-	db.storeSubreddit(subreddit_db, userInput);
-
+  db.storeSubreddit(subreddit_db, userInput);
+  
 	// Close pop-up
 	addWindow.close();
 
-	let subreddits = db.querySubreddits(subreddit_db);
-	console.log(subreddits);
+	// let subreddits = db.querySubreddits(subreddit_db);
+	// console.log(subreddits);
 	
-	// Fetch data and store it
-	// // Test getting data and storing in database
-	let post_db = db.open('posts');
-	try {
-		get.posts(userInput)
-		.then( (postDataArray) => {
-			console.log('Testing storeData');
-			db.storePosts(post_db, postDataArray);
-		}).catch(function(error) {
-				console.log(error);
-		});
-	} catch(error) {
-		console.log(error);
-	}
-
-
-
+	// // Fetch data and store it
+	// // // Test getting data and storing in database
+	// let post_db = db.open('posts');
+	// try {
+	// 	get.posts(userInput)
+	// 	.then( (postDataArray) => {
+	// 		console.log('Testing storeData');
+	// 		db.storePosts(post_db, postDataArray);
+	// 	}).catch(function(error) {
+	// 			console.log(error);
+	// 	});
+	// } catch(error) {
+	// 	console.log(error);
+	// }
 });
 
-// Create menu template
-const mainMenuTemplate = [
-	{
-		label:'File',
-		submenu:[
-			{
-				label: 'Add Item',
-				click(){
-					createAddWindow();
-				}
-			},
-			{
-				label: 'Clear Items',
-				click(){
-					mainWindow.webContents.send('item:clear');
-				}
-			},
-			{
-				label: 'Quit',
-				accelerator: process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
-				click(){
-					app.quit();
-				}
-			}
-		]
-	}];
-	
-// If mac, add empty object to menu
-if (process.platform == 'darwin') {
-	mainMenuTemplate.unshift({});
-}
+// Catch ipcMain get:subreddit and return
+ipcMain.on('get:subreddit', (e, item) => {
+	console.log(item);
+	mainWindow.webContents.send('item:add', item);
+	// addWindow.close();
+});
 
-//Add developer tools item if not in production
-if (process.env.NODE_ENV !== 'production') {
-	mainMenuTemplate.push({
-		label: 'Developer Tools',
-		submenu:[
-			{
-				label: 'Toggle DevTools',
-				accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
-				click(item, focusedWindow){
-					focusedWindow.toggleDevTools();
-				}
-			},
-			{
-				role: 'reload'
-			}
-		]
-	});
-}

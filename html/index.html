@@ -4,10 +4,10 @@
 		<meta charset="UTF-8">
 		<title>Carnac - Dashboard</title>
 		<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
-		<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js" async></script>
+		<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js" async></script>
-		<!-- <script type="text/javascript">
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript">
 			google.charts.load('current', {'packages':['bar']});
 			google.charts.setOnLoadCallback(drawStuff);
 
@@ -43,10 +43,9 @@
 				chart1.draw(data, google.charts.Bar.convertOptions(options));
 
 			};
-		</script> -->
+		</script>
 	</head>
 	<body>
-
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-xs-12 col-lg-2" style="padding-left: 0">
@@ -60,9 +59,6 @@
 					</div>
 				</div>
 				<div class="col-xs-12 col-lg-10">
-					<ul></ul>
-				</div>
-				<!-- <div class="col-xs-12 col-lg-10">
 					<br/>
 					<div class="card">
 						<div class="card-body">
@@ -73,17 +69,19 @@
 									<p class="card-text">
 										Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.                                    Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.
 										Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.                                    Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.
+	
 									</p>
 									<a href="#" class="btn btn-danger">Keyword 1</a>
 									<a href="#" class="btn btn-danger">Keyword 2</a>
 									<a href="#" class="btn btn-danger">Keyword 3</a>
+	
 								</div>
 								<div class="col-lg-4">
-										<h6 class="card-title"><i class="material-icons">
-												sentiment_satisfied_alt
-										</i> &nbsp; Positive Sentiment</h6>
-										<h6 class="card-subtitle mb-2 text-muted">Home /Content Category</h6>
-										<div class="col-sm-12" id="top_1_div" style="width: 100px; height: 200px;"></div>
+									<h6 class="card-title"><i class="material-icons">
+										sentiment_satisfied_alt
+									</i> &nbsp; Positive Sentiment</h6>
+									<h6 class="card-subtitle mb-2 text-muted">Home /Content Category</h6>
+									<div class="col-sm-12" id="top_1_div" style="width: 100px; height: 200px;"></div>
 								</div>
 							</div>
 						</div>
@@ -98,10 +96,12 @@
 									<p class="card-text">
 										Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.                                    Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.
 										Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.                                    Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.
+	
 									</p>
 									<a href="#" class="btn btn-danger">Keyword 1</a>
 									<a href="#" class="btn btn-danger">Keyword 2</a>
 									<a href="#" class="btn btn-danger">Keyword 3</a>
+	
 								</div>
 								<div class="col-lg-4">
 									<h6 class="card-title"><i class="material-icons">
@@ -113,12 +113,11 @@
 							</div>
 						</div>
 					</div>
-				</div> -->
+	
+				</div>
 			</div>
-		</div>
+	</div>
 		<script>
-
-
 			const electron = require('electron');
 			const {ipcRenderer} = electron;
 			
@@ -126,7 +125,7 @@
 			document.addEventListener("DOMContentLoaded", () => {
 				//ipcRenderer.send("mainWindowLoaded");
 				const ul = document.querySelector('ul');
-				ipcRenderer.on('item:add', (e, item) => {
+				ipcRenderer.on('add:subreddit', (e, item) => {
 					ul.className = '';
 					let li = document.createElement('li');
 					li.className = '';
@@ -141,35 +140,6 @@
 				});
 
 			});
-				// Add item
-			
-		
-			
-
-				// <div class="card">
-				// 			<div class="card-body">
-				// 				<div class="row">
-				// 					<div class="col-sm-8">
-				// 						<h5 class="card-title" style="text-decoration: underline">Reddit Post Linked Title</h5>
-				// 						<h6 class="card-subtitle mb-2 text-muted">r/subreddit</h6>
-				// 						<p class="card-text">
-				// 							Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.                                    Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.
-				// 							Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.                                    Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post. Summary text of this post.
-				// 						</p>
-				// 						<a href="#" class="btn btn-danger">Keyword 1</a>
-				// 						<a href="#" class="btn btn-danger">Keyword 2</a>
-				// 						<a href="#" class="btn btn-danger">Keyword 3</a>
-				// 					</div>
-				// 					<div class="col-lg-4">
-				// 						<h6 class="card-title"><i class="material-icons">
-				// 							sentiment_satisfied_alt
-				// 						</i> &nbsp; Positive Sentiment</h6>
-				// 						<h6 class="card-subtitle mb-2 text-muted">Home /Content Category</h6>
-				// 						<div id="top_x_div" style="width: 100px; height: 200px;"></div>
-				// 					</div>
-				// 				</div>
-				// 			</div>
-				// 		</div>
 		</script>
 	</body>
 </html>

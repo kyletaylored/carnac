@@ -76,7 +76,17 @@ module.exports = {
             module.exports.insert(db_object_instance, jsonArray[i]);
         }
     },
-    querySubreddits: (db_object_instance) => {
+    getSubreddits: (db_object_instance) => {
+        db_object_instance.find({}, (err, docs) => {
+            return docs;
+        });
+    },
+    getPosts: (db_object_instance) => {
+        db_object_instance.find({}, (err, docs) => {
+            return docs;
+        });
+    },
+    getComments: (db_object_instance) => {
         db_object_instance.find({}, (err, docs) => {
             return docs;
         });

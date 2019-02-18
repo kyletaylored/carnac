@@ -6,7 +6,8 @@ build/*
 coverage
 thumbs.db
 !.gitkeep
-node_modules/
+node_modules
 npm-debug.log
 npm-debug.log.*
-db/
+db
+.vscode

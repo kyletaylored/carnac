@@ -29,7 +29,7 @@
 			e.preventDefault();
 		  console.log(e);
 			const item = document.querySelector('#item').value;
-			ipcRenderer.send('item:add', item);
+			ipcRenderer.send('add:subreddit', item);
 		}
 	</script>
 </body>
