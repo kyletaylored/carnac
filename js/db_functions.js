@@ -26,7 +26,9 @@ module.exports = {
     // Function to query database
     query: (db_object_instance, key, value) => {
         // Query database
-
+        db_object_instance.find({}, (err, docs) => {
+            console.log('Found: ', docs);
+        });
 
         /////////////////////////////////////////////
         //////////Example Structure//////////////////
@@ -37,7 +39,7 @@ module.exports = {
         // Probably return a value or JSON object so other functions can work with it
     },
     // Function to remove data from db
-    remove: (key, value, db_object_instance) => {
+    delete: (key, value, db_object_instance) => {
         // Delete
 
         /////////////////////////////////////////////
