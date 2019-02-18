@@ -19,42 +19,34 @@ let mainWindow;
 // Set ENV for production when ready
 //process.env.NODE_ENV = 'production';
 
-/* ------------------ { MAIN } ------------------ */
+/* ---------------- { FUNCTIONS } --------------- */
+function createWindow () {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
 
-// Listen for the app to be ready
-app.on('ready', () => {
-	// Create main electron window
-	mainWindow = new BrowserWindow({
-		width: 1200,
-		height: 800,
-		title: "CARNAC",
-		show: false
-	});
-	// Quit app when closed
-	mainWindow.on('closed', () => { 
-		app.quit();
-	});
-	//Load html into window
-	mainWindow.loadURL(url.format({
-		pathname: path.join(__dirname, 'html/index.html'),
-		protocol:'file:',
-		slashes: true
-  }));
-	// Wait for page contents to load before displaying electron window
-	mainWindow.once('ready-to-show', () => {
-		mainWindow.show();
-	});
+  // and load the index.html of the app.
+  mainWindow.loadFile('./html/index.html');
 
-	// Listen for page to be ready in mainWindow
-	// ipcMain.on("mainWindowLoaded", () => {
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
 
-	// });
-
-	//Build menu from template
+  // Emitted when the window is closed.
+  mainWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null;
+  });
+  //Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	Menu.setApplicationMenu(mainMenu);
-	
-});
+}
 
 // Handle create add window
 function createAddWindow() {
@@ -65,18 +57,35 @@ function createAddWindow() {
 		title: 'Add Subreddit'
 	});
 
-	//Load html into window
-	addWindow.loadURL(url.format({
-		pathname: path.join(__dirname, 'html/addSubreddit.html'),
-		protocol:'file:',
-		slashes: true
-	}));
+
+  // and load the index.html of the app.
+  addWindow.loadFile('html/addSubreddit.html')
+	//
 
 	// Gargage collection handle
 	addWindow.on('close', () => {
 		addWindow = null;
 	});
 }
+/* ------------------ { MAIN } ------------------ */
+
+// Listen for the app to be ready
+app.on('ready', createWindow);
+app.on('window-all-closed', () => {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+})
+app.on('activate', function () {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow()
+  }
+})
+
 
 // // Template for Catching ipcMain item:add
 // ipcMain.on('item:add', function(e, item){

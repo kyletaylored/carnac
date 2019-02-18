@@ -43,7 +43,8 @@
 				chart1.draw(data, google.charts.Bar.convertOptions(options));
 
 			};
-		</script>
+    </script>
+    <script type="text/javascript" src='../js/index-jquery.js'></script>
 	</head>
 	<body>
 		<div class="container-fluid">
@@ -116,30 +117,6 @@
 	
 				</div>
 			</div>
-	</div>
-		<script>
-			const electron = require('electron');
-			const {ipcRenderer} = electron;
-			
-			
-			document.addEventListener("DOMContentLoaded", () => {
-				//ipcRenderer.send("mainWindowLoaded");
-				const ul = document.querySelector('ul');
-				ipcRenderer.on('add:subreddit', (e, item) => {
-					ul.className = '';
-					let li = document.createElement('li');
-					li.className = '';
-					console.log(item);
-					item.forEach( (element) => {
-						console.log(element);
-						let li = document.createElement('li');
-						let itemText = document.createTextNode(element);
-						li.appendChild(itemText);
-						ul.appendChild(li);
-					});		
-				});
-
-			});
-		</script>
+	  </div>
 	</body>
 </html>
