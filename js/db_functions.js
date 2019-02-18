@@ -39,15 +39,13 @@ module.exports = {
         // Probably return a value or JSON object so other functions can work with it
     },
     // Function to remove data from db
-    delete: (key, value, db_object_instance) => {
+    delete: (db_object_instance, key, value) => {
         // Delete
-
-        /////////////////////////////////////////////
-        //////////Example Structure//////////////
-        // users.remove({ name: { $regex: /^Scott/ } }, function(err, numDeleted) {  
-        // 	console.log('Deleted', numDeleted, 'user(s)');
-        // });
+        db_object_instance.remove({ }, (err, numDeleted) => {
+            console.log(numDeleted, ' records deleted');
+        });
     },
+    // Store subreddit information into DB
     storeSubreddit: (db_object_instance, userInput) => {
         //create JSON object to prepare for insert
         let data = {
@@ -57,6 +55,7 @@ module.exports = {
         // Insert into db
         module.exports.insert(db_object_instance, data);
     },
+    // Store post metadata into DB
     storePosts: (db_object_instance, jsonArray) => {
         // Iterate through jsonArray
         for (i in jsonArray) {
@@ -66,6 +65,7 @@ module.exports = {
             module.exports.insert(db_object_instance, jsonArray[i]);
         }
     },
+    // Store comments metadata into DB
     storeComments: (db_object_instance, jsonArray) => {
         // Open database with specified name and assign return object to variable "db"
         let db = module.exports.open('comments');

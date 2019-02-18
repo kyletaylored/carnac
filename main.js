@@ -39,7 +39,7 @@ app.on('ready', () => {
 		pathname: path.join(__dirname, 'html/index.html'),
 		protocol:'file:',
 		slashes: true
-	}));
+  }));
 	// Wait for page contents to load before displaying electron window
 	mainWindow.once('ready-to-show', () => {
 		mainWindow.show();
@@ -88,12 +88,27 @@ function createAddWindow() {
 // Catch add:subreddit and store subreddit information
 ipcMain.on('add:subreddit', (e, userInput) => {
 	
-	//create JSON object to prepare for insert
-	let subreddit_db = db.open('subreddits');
-  db.storeSubreddit(subreddit_db, userInput);
+  //create JSON object to prepare for insert
+  let return_status;
+  try {
+      // Open subreddits.db database file
+
+    let subreddit_db = db.open('subreddits');
+
+    // Insert document with subreddit name into subreddit.db database
+    db.storeSubreddit(subreddit_db, userInput);
+  }
+  catch(err) {
+    // Print error on 
+    console.log(err);
+    return_status = err;
+  }
+  finally {
+    mainWindow.webContents.send('add:subreddit', return_status);
+  }
   
 	// Close pop-up
-	addWindow.close();
+  addWindow.close();
 
 	// let subreddits = db.querySubreddits(subreddit_db);
 	// console.log(subreddits);
