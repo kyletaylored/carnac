@@ -1,0 +1,72 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-lg-2" style="padding-left: 0">
+
+            <div class="list-group">
+
+                <a class="list-group-item list-group-item-action bg-danger"
+                    style="text-align: center; font-weight: bolder; font-size: xx-large; color: white">Carnac</a>
+                <a href="/dashboard" class="list-group-item list-group-item-action"><span
+                        class="material-icons">home</span><span style="position:absolute; ">
+                        &nbsp;&nbsp;Dashboard</span></a>
+                <a href="/add-subreddit" class="list-group-item list-group-item-action"><span
+                        class="material-icons">add_circle</span><span style="position:absolute; "> &nbsp;&nbsp;Add
+                        SubReddits</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><span
+                        class="material-icons">signal_cellular_alt</span><span style="position:absolute; ">
+                        &nbsp;&nbsp;Analyze Posts</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><span
+                        class="material-icons">visibility</span><span style="position:absolute; "> &nbsp;&nbsp;View
+                        Metadata</span></a>
+                <a href="/stored-posts" class="list-group-item list-group-item-action"><span
+                        class="material-icons">reorder</span><span style="position:absolute; "> &nbsp;&nbsp;Stored
+                        Posts</span></a>
+                <a href="/logout" class="list-group-item list-group-item-action"><span
+                        class="material-icons">reorder</span><span style="position:absolute; "> &nbsp;&nbsp;Logout
+                    </span></a>
+
+
+            </div>
+        </div>
+        <div class="col-xs-12 col-lg-10">
+
+
+            {{#each posts}}
+
+            <br />
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-sm-8">
+
+                            <h5 class="card-title" style="text-decoration: underline">{{this.title}}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">r/{{this.permalink}}</h6>
+                            <p class="card-text">
+                                {{this.link_flair_text}}
+
+                            </p>
+
+                            <a href="#" class="btn btn-danger">Keyword 1</a>
+                            <a href="#" class="btn btn-danger">Keyword 2</a>
+                            <a href="#" class="btn btn-danger">Keyword 3</a>
+                            
+
+
+                        </div>
+                        <div class="col-lg-4">
+                            <h6 class="card-title"><i class="material-icons">
+                                    sentiment_satisfied_alt
+                                </i> &nbsp; Positive Sentiment</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">Home /Content Category</h6>
+                            <div class="col-sm-12" id="top_x_div" style="width: 100px; height: 200px;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{/each}}
+        </div>
+    </div>
+</div>

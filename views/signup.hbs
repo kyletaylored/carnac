@@ -1,0 +1,131 @@
+{{!-- 
+ <div class="container">
+  <div class="col-sm-6 col-sm-offset-3">
+   <h2>Register</h2>
+
+   {{#if message}} 
+    <div class="alert alert-danger">{{ message}}</div> 
+   {{/if}}
+
+
+
+   <form action="/signup" method="post">
+    <div class="form-group">
+     <label>Username</label>
+     <input type="text" class="form-control" name="username">
+    </div>
+    <div class="form-group">
+     <label>Password</label>
+     <input type="text" class="form-control" name="password">
+    </div>
+
+    <button type="submit" class="btn btn-succcess btn-lg">Register</button>
+   </form>
+
+   <hr>
+
+   <p>Need an account <a href="/signup">Register</a></p>
+   <p>Go Back <a href="/">Home</a>.</p>
+  </div>
+ </div> --}}
+
+  {{!-- <script>
+
+    function validate(val) {
+        if (typeof val === 'undefined' || val === "") {
+            return false;
+        }
+        return true;
+    }
+
+    $(document).ready(function () {
+
+
+        $("#form").submit(function (event) {
+            event.preventDefault();
+
+            var m = 0;
+            if ($("#m").prop("checked", true)) {
+                m = 1;
+            }
+
+
+            if (validate($("#fname").val()) === false) {
+                alert("First Name is required!")
+            }
+            else if (validate($("#lname").val()) === false) {
+                alert("Last Name is required!")
+            }
+            else if (validate($("#email").val()) === false) {
+                alert("Email is required!")
+            }
+            else if (validate($("#password").val()) === false) {
+                alert("Password is required!")
+            }
+            else if (validate($("#dob").val()) === false) {
+                alert("Date of birth is required!")
+            }
+
+
+        });
+
+
+    });
+
+</script> --}}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8">
+            <form  method="POST" action="signup" id="form">
+                <h1 class="form-head">Create your new account!</h1>
+                <hr>
+                {{#if message}}
+                    <div class="alert alert-danger">{{message}}</div>
+                {{/if}}
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <input id="fname" class="form-control form-control-lg" type="text" name="fname" placeholder="First Name">
+                        </div>
+                        <div class="col-lg-6">
+                            <input id="lname" class="form-control form-control-lg" type="text" name="lname" placeholder="Last Name">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input id="email" class="form-control form-control-lg" type="email" name="email"
+                        placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <input id="password" class="form-control form-control-lg" type="password" name="password"
+                        placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="dob">Date of Birth:</label>
+                            <input type="date" class="form-control" id="dob" name="dob">
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Gender:</label><br />
+                            <div class="form-check form-check-inline">
+                                <input type="radio" class="form-check-input" value="true" name="gender">
+                                <label class="form-check-label" for="male">Male</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" class="form-check-input" value="false" name="gender">
+                                <label class="form-check-label" for="female">Female</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <input class="form-control btn-primary" type="submit" value="Register Now!" id="signup">
+
+            </form>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+</div> 
