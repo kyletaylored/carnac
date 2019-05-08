@@ -1,304 +1,251 @@
-var request = require('request');
-var bcrypt = require('bcrypt-nodejs');
-
-module.exports = function(app, connection) {
- app.get('/', function(req, res){
-    if (req.session.user){
-        res.redirect('/dashboard');
-        return;
-     }
-    res.render('login.hbs');
- });
-
- app.get('/login', function(req, res){
-    if (req.session.user) {
-       return res.redirect('/');
-    }
-    res.status(200);
-  res.render('login.hbs')
- });
+const fs = require('fs');
+const db = require('./db_functions.js');
+const getData = require('./get_functions.js');
 
 
- app.post('/login', (req, res)=> {
-    
-    if(req.method =="POST"){
-       var username = req.body.username;
-       var password = req.body.password;
-       
-       if(username == '')
-       {
-          res.status(500);
-          return res.render('login.hbs', {message: 'Please enter your Username !'})
-       }
-       if(password == ''){
-          res.status(500);
-          return res.render('login.hbs', { message: 'Please enter your Password !' })
-       }
-       if (!validateEmail(username)) {
-          res.status(500);
-          return res.render('login.hbs', { message: 'Please enter your Email !' })
-       }
-       
-       connection.query('SELECT * from users WHERE email = ?',[username], 
-         function(err, rows){
-            if(err)
-               return res.send('Error');
-            if(!rows.length){
-               return res.render('login.hbs', { message: 'No user Found' })
-            }
-            if(rows.length){
-               
-               if(!bcrypt.compareSync(password, rows[0].password)){
-                  return res.render('login.hbs', {message: 'Wrong Password'})
-               }
-               
-               req.session.user = rows[0];
-               
-               res.redirect('/');
-            }
-            else{
-               
-               res.render('login.hbs', { message:  'Wrong Credentials' });
-            }
-         }
-       )
-    }
- })
+// module.exports = (app, API_client, subreddits_db, posts_db, stored_posts_db) => {
+	module.exports = (app, subreddits_db, posts_db, stored_posts_db) => {
+	app.get('/', (req, res) => {
+		
+		
+		// async function main() {
+			
+		// 	// The text to analyze
+		// 	const text = 'Hello, world!';
+		
+		// 	const document = {
+		// 		content: text,
+		// 		type: 'PLAIN_TEXT',
+		// 	};
+		
+		// 	// Detects the sentiment of the text
+		// 	const [result] = await API_client.analyzeSentiment({document: document});
+		// 	const sentiment = result.documentSentiment;
+		
+		// 	console.log(`Text: ${text}`);
+		// 	console.log(`Sentiment score: ${sentiment.score}`);
+		// 	console.log(`Sentiment magnitude: ${sentiment.magnitude}`);
+		// }
+		
+		// main().catch(console.error);
+		
+		if (fs.existsSync('./APIkey.txt')) {
+			res.redirect('/dashboard');
+			return;
+		}
+		else {
+			res.redirect('/setup');
+			return;
+		}
+	});
 
- 
+	app.get('/setup', (req, res) => {
+				res.status(200);
+				res.render('setup.hbs');
+				return;
+		});
+	
+	app.post('/setup', (req, res) => {
+		let key = req.body.APIkey.trim();
+		if (key == '') {
+				res.status(500);
+				res.render('setup.hbs', { message: 'Please enter your Google NLP API authentication key.'});
+				return;
+		}
+		else {
+			fs.writeFileSync('./APIkey.txt', key, function (err) {
+				if(err) {
+					console.log(err);
+					return;
+				}
+			});
+			res.redirect('/dashboard');
+			return;
+		}
+	});
 
- app.get('/signup', function(req, res){
-    if (req.session.user) {
-       return res.redirect('/');
-    }
-  res.render('signup.hbs');
- });
+	app.get('/dashboard', (req, res) => {
+		// // Removing all documents with the 'match-all' query
+		posts_db.remove({}, { multi: true }, function (err, numRemoved) {
+			console.log(numRemoved, 'posts dropped from post_db');
+		
+			subreddits_db.find({}, (err, docs) => {
+				if (docs === undefined || docs.length == 0) {
+					console.log('Redirecting to /add-subreddit');
+					res.redirect('/add-subreddit');
+					return;
+				}
+				else {
+					// Concatinate subreddit names to form URL compatible string
+					let multi_reddit = [];
+					for (i = 0; i < docs.length; i++) {
+						multi_reddit[i] = docs[i].subreddit;
+					}
+					multi_reddit = multi_reddit.join('+');
+					
+					
 
+					// Gather post data using concatinated URL string
+					getData.posts(multi_reddit)
+					.then( (postDataArray) => {
 
- app.post('/signup', (req, res)=> {
+						console.log('Storing postDataArray');
+						// db.storePosts(posts_db, postDataArray);
 
+						// insert all new posts into posts_db
+						posts_db.insert(postDataArray, (err, newDocs) => {
+							newDocs.forEach(function(d) {
+								console.log('Saved post:', d.post_id);
+							});
+							//query stored_posts_db for saved IDs
+							stored_posts_db.find({}, (err, storedDocs) => {
+								if (err) {
+									console.log (err);
+									return;
+								}
+								else if(storedDocs === undefined || storedDocs.length == 0) {
+									console.log('No stored posts');
+									res.status(200);
+									res.render('dashboard.hbs', {posts : newDocs});
+									return;
+								}
+								else {
+									//compare the post ID of newly grabbed posts to that of stored_posts_db
+									newDocs.forEach( function (newID) {
+										storedDocs.forEach( function (storedID) {
+											// If the new post data matches a stored post ID and isn't marked saved, update posts_db to reflect the change
+											if (newID.post_id == storedID.post_id && newID.saved == false) {
+												posts_db.update({ post_id : newID.post_id}, { $set : { saved : true } }, {}, (err, numReplaced)  => {
+													if(err){
+														console.log(err);
+														return;
+													}
+													console.log(numReplaced);
+													
+												});
+											}
+										});
+									});
+									// finally, sort all results of posts_db and sort by index value per document
+									posts_db.find({}).sort({index : 1}).exec((err, finalDocs) => {
+										console.log('Stored posts found');
 
-   
-   
-   if(req.method ==="POST"){
-      
-      var fname = req.body.fname;
-      var lname = req.body.lname;
-      var email = req.body.email;
-      var password = req.body.password;
-      var dob = req.body.dob;
-      var gender = req.body.gender;
-      console.log(gender)
-      
+										// render hbs file with final sorted list
+										res.status(200);
+										res.render('dashboard.hbs', {posts : finalDocs});
+									});
+								}
+							});
+						});
+					}).catch(function(err) {
+							if (err){
+								console.log(err);
+							} 
+					});
+				}
+			});
+		});
+	});
 
-      if(fname =='' || lname=='' || email=='' || password =='' || dob == undefined || gender ==undefined){
-         console.log(fname, lname, email, dob, gender);
-         console.log('NULL');
-         res.status(500);
-         return res.render('signup.hbs', { message: 'Fields are missing!' });
-         
-      }
-      if (!validateEmail(email)) {
-         res.status(500);
-         return res.render('signup.hbs', { message: 'Please Enter correct Email !' });
-      }
+	app.post('/dashboard', (req, res) => {
+		res.redirect('dashboard.hsb');
+		return;
+	})
 
-      password = bcrypt.hashSync(password, null, null);
-      connection.query("SELECT * FROM users WHERE email = ? ",
-         [email], function (err, rows) {
-            if (err)
-               res.send('Error')
-            if (rows.length>0) {
-               console.log('Email alreday used')
-               res.render('signup.hbs', { message:  'Email already used!'})
-            } else {
-               var insertQuery = "INSERT INTO users ( fname, lname, email, password, dob, gender) values (?, ?, ?, ?, ?, ?)";
+	app.get('/add-subreddit', (req, res) => {
+		res.status(200);
+		res.render('addsub.hbs');
+	});
 
-               connection.query(insertQuery, [fname, lname, email, password, dob, gender],
-                  function (err, rows) {
-                     if(err)
-                        return console.log(err);
-                     console.log(rows, "rows")
-                     
-                     return res.redirect('/login')
-                  });
+	app.post('/add-subreddit', (req, res) => {
+		let input = req.body.subreddit.trim();
+		if (input.length == 0) {
+			res.status(500);
+			res.render('addsub.hbs', { message: 'Please enter the name of a subreddit!' });
+		}
+		else {
+			subreddits_db.find({subreddit : input}, (err, docs) => {
+				if (docs === undefined || docs.length == 0) {
+					try {
+						// Insert document with subreddit name into subreddits_db database
+							console.log('No results found for ', input);
+							console.log('Storing ', input);
+							db.storeSubreddit(subreddits_db, input);
+						}
+					catch(err) {
+						// Print error on 
+						console.log(err);
+						// return_status = err;
+					}
+					res.status(200)
+					res.render('addsub.hbs', { message: 'Subreddit has been added successfully!' });
+				}
+				else {
+					res.render('addsub.hbs', {message : 'Subreddit has already been added' });
+				}
+			});
+		}
+	});
 
-               
-            }
-         });
-      
-   } 
- })
+	app.post('/store-post', (req, res) => {
+		let id = req.body.post_id
+		console.log(id);
 
- 
+		posts_db.update({ post_id : id}, { $set : { saved : true } }, {}, (err, numReplaced)  => {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			posts_db.findOne({ post_id : id}, (err, doc) => {
+				if (err){
+					console.log(err);
+					return;
+				}
+				// console.log('Results from findOne: ', doc);
+				
+				stored_posts_db.insert(doc, (err, newDoc) => {
+					if (err) {
+						console.log(err);
+						return;
+					}
+					// console.log('Storing the following in stored_posts_db: ', newDoc);
+				});
+			});
+		});
+	});
 
-   app.get('/logout', function (req, res) {
-      req.session.destroy(function (err) {
-         if (err) {
-            console.log(err);
-         }
-         else {
-            res.redirect('/');
-         }
-      });
+	app.get('/stored-posts', (req, res) => {
 
-   }); 
+		stored_posts_db.find({}, (err, docs) => {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			else if (docs.length == 0) {
+				console.log('No posts have been saved');
+				res.status(200);
+				res.render('stored.hbs', { message: 'No posts have been saved.'});
+				return;
+			}
+			else {
+				res.status(200);
+				res.render('stored.hbs', { posts: docs });
+				return;
+			}
+		});
+	});
 
-   app.get('/dashboard', (req, res) => {
-      if (!req.session.user)
-         return res.redirect('/login')
-      else{
+	// app.get('/open-link/:permalink', (req, res) => {
+	// 	let link = req.params.permalink;
+	// 	let url = "https://www.reddit.com" + link;
+	// 	console.log(req.params);
+	// 	open(url);
+	// });
 
-         connection.query('SELECT * from posts', function(err, result){
-            if(err)
-               console.log(err);
-            else{
-               res.render('dashbaord.hbs', {posts: result});
-               
-            }
-         })
-         
-      }
-      
-      
-   });
+	// app.get('/login', (req, res) => {
+		
+	//   res.status(200);
+	//   res.render('login.hbs');
+	// });
 
-   app.get('/add-subreddit', (req, res)=> {
-      if(!req.session.user)
-         return res.redirect('/login');
-      res.render('addsub.hbs');
-   });
-
-   app.post('/add-subreddit', (req, res)=> {
-      if(!req.session.user)
-         return res.redirect('/login');
-      var subreddit = req.body.subreddit;
-      if(subreddit.length == 0)
-      {
-         res.status(500);
-         return res.render('addsub.hbs', { message: 'Please Enter Correct subreddit!' })
-      }
-      var url = 'https://www.reddit.com/r/' + subreddit + '.json';
-      request(url, function (err, response, html){
-         if(!err){
-            console.log(response.statusCode)
-            if(response.statusCode==200)
-            {
-               var jsonData = response.body;
-               
-               var valuesJvascripttArray = JSON.parse(jsonData).data;
-               
-               
-               
-               var querySubreddit = 'INSERT INTO subreddits (subreddit , subreddit_name_prefixed, subreddit_subscribers, user_id) VALUES (?, ?, ?, ?) ';
-               
-               connection.query(querySubreddit, [valuesJvascripttArray.children[0].data.subreddit, valuesJvascripttArray.children[0].data.subreddit_name_prefixed, valuesJvascripttArray.children[0].data.subreddit_subscribers, req.session.user.id], function (err, result, fields) {
-                  if (err) {
-                     res.status(500);
-                     return res.render('addsub.hbs', {message: 'This subreddit already exists or something wrong happened !'})
-                  }
-                  else {
-                     
-                     
-                     var values = [];
-
-                     for (let i = 0; i < valuesJvascripttArray.children.length; i++)
-                        values.push([valuesJvascripttArray.children[i].data.title, valuesJvascripttArray.children[i].data.permalink, valuesJvascripttArray.children[i].data.num_comments, valuesJvascripttArray.children[i].data.link_flair_text, valuesJvascripttArray.children[i].data.score, result.insertId])
-                     
-                     var queryPost = 'INSERT INTO posts (title, permalink, num_comments, link_flair_text, score, subreddit_id) VALUES ? ';
-
-                     connection.query(queryPost, [values], function(err, result){
-                        res.status(200)
-                        return res.render('addsub.hbs', { message: 'Subreddit has been added !'});
-                     })
-                     
-                      
-                  }
-               });
-
-               
-
-                
-               
-               
-            }
-               
-            else{
-               console.log('Please Enter Correct subreddit!');
-               res.status(500);
-               return res.render('addsub.hbs', { message: 'Please Enter Correct subreddit!' })
-               
-            }
-         }
-         else{
-            console.log('Error')
-         }
-         
-      })
-
-
-   });
-
-
-
-   app.get('/stored-post/:id', (req, res)=>{
-      var postId = req.params.id;
-      
-      var query = 'SELECT * FROM posts where id = ? ';
-      connection.query(query, [postId], function(err, results){
-         if(err)
-            return console.log('Error');
-         console.log(results[0].id)
-         query = 'INSERT INTO storedposts (user_id, status, post_id) VALUES (?, ?, ?)';
-         connection.query(query, [req.session.user.id, 4, results[0].id], function(err, result){
-            if(err)
-               return console.log(err)
-            console.log(result)
-         } )
-         res.redirect('/dashboard');
-      });
-   });
-
-   app.get('/stored-posts', (req, res)=>{
-      if (!req.session.user)
-         return res.redirect('/login')
-      else {
-
-         connection.query('SELECT * from storedposts where user_id = ? ',[req.session.user.id], function (err, result) {
-            if (err)
-               console.log(err);
-            else {
-               
-               if(result.length>0){
-                  var values = [];
-                  for (let i = 0; i < result.length; i++)
-                     values.push(result[i].post_id);
-                  console.log(values);
-
-                  connection.query('SELECT * FROM posts where id IN (?) ', [values], function (err, result) {
-                     if (err)
-                        return console.log(err);
-                     else {
-                        console.log(result)
-                        res.render('stored.hbs', { posts: result })
-                     }
-                  })
-               }
-               else{
-                  res.render('dashbaord.hbs')
-               }
-               
-
-            }
-         })
-
-      }
-   })
-};
-
-
-
-function validateEmail(email) {
-   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-   return re.test(String(email).toLowerCase());
 }

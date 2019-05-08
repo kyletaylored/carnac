@@ -39,27 +39,24 @@
 
                     <div class="row">
                         <div class="col-sm-8">
-
-                            <h5 class="card-title" style="text-decoration: underline">{{this.title}}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">r/{{this.permalink}}</h6>
-                            <p class="card-text">
-                                {{this.link_flair_text}}
-
-                            </p>
-
-                            <a href="#" class="btn btn-danger">Keyword 1</a>
+                            {{#if message}}
+                                <div class="alert alert-danger">{{message}}</div>
+                            {{/if}}
+                            <h5 class="card-title" style="text-decoration: underline">
+                                <a href="https://www.reddit.com{{this.permalink}}" target="_blank" style="color:black">{{this.title}}</a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{this.permalink}}</h6>
+                            
+                            <a href="https://trends.google.com/trends/explore?geo=US&q={{this.title}}"  target="_blank" class="btn btn-danger">Trends</a>
                             <a href="#" class="btn btn-danger">Keyword 2</a>
                             <a href="#" class="btn btn-danger">Keyword 3</a>
-                            
-
-
                         </div>
                         <div class="col-lg-4">
                             <h6 class="card-title"><i class="material-icons">
                                     sentiment_satisfied_alt
                                 </i> &nbsp; Positive Sentiment</h6>
                             <h6 class="card-subtitle mb-2 text-muted">Home /Content Category</h6>
-                            <div class="col-sm-12" id="top_x_div" style="width: 100px; height: 200px;"></div>
+                            {{!-- <div class="col-sm-12" id="top_x_div" style="width: 100px; height: 200px;"></div> --}}
                         </div>
                     </div>
 

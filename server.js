@@ -1,50 +1,64 @@
-var express = require('express');
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
+// const exphbs = require('express-handlebars');
+let express = require('express');
+let exphbs = require('express-handlebars');
 var bodyParser = require('body-parser');
-var morgan = require('morgan');
-const exphbs = require('express-handlebars');
-var mysql = require('mysql');
+const Datastore = require('nedb');
+// const language = require('@google-cloud/language');
+  
+// Instantiates a client
+// const API_client = new language.LanguageServiceClient({      
+// 		projectId: 'NLP-testing',
+// 		keyFilename: './nlp-credentials.json',
+// });
 
-var flash = require('connect-flash');
+// Set up databases
+let posts_db = new Datastore({
+	filename: './db/posts.db',
+	autoload: true,
+	onload: err => {
+		if (err) {
+				console.error('Error while loading the post db!', err);
+		} else {
+			console.log('posts_db loaded successfully');
+		}
+	}
+});
 
-var app = express();
-var port = process.env.PORT || 8081;
+// let posts_db = new Datastore();
+let subreddits_db = new Datastore({     
+	filename: './db/subreddits.db', 
+	autoload: true,
+	onload: err => {
+		if (err) {
+				console.error('Error while loading the subreddit db!', err);
+		} else {
+			console.log('subreddit_db loaded successfully');
+		}
+	}
+});
 
+let stored_posts_db = new Datastore({     
+	filename: './db/stored_posts.db', 
+	autoload: true,
+	onload: err => {
+		if (err) {
+				console.error('Error while loading the comment db!', err);
+		} else {
+			console.log('stored_posts_db loaded successfully');
+		}
+	}
+});
 
-
-var dbconfig = require('./config/database');
-var connection = mysql.createConnection(dbconfig.connection);
-
-connection.query('USE ' + dbconfig.database);
-
-
-
-
-
-app.use(morgan('dev'));
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({
- extended: true
-}));
-
-//app.set('view engine', 'ejs');
+let app = express();
 app.engine('.hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }));
 app.set('view engine', 'hbs');
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.urlencoded({
+	extended: true
+ }));
 
-app.use(session({
- secret: 'justasecret',
- resave:true,
- saveUninitialized: true
-}));
+// require('./app/routes.js')(app, API_client, subreddits_db, posts_db, stored_posts_db);
+require('./app/routes.js')(app, subreddits_db, posts_db, stored_posts_db);
 
-
-app.use(flash());
-
-require('./app/routes.js')(app, connection);
-
-
-
-app.listen(port);
-console.log("Port: " + port);
+app.listen(3000);
+console.log('Listening on port 3000');
