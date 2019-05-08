@@ -12,7 +12,8 @@ Below is a mockup of the list dashboard.
 # Getting Started
 
 > Run: npm install
-> Run: npm install grpc --runtime=electron --target=<current electron version>
+
+> Run: npm install grpc --runtime=electron --target=<"current electron version">
 
 1. Create a Google NLP service account
     1. https://support.google.com/a/answer/7378726?hl=en
