@@ -1,158 +1,109 @@
-/* ------------------- Includes -------------------*/
-const electron = require('electron');
-const url = require('url');
-const path = require('path');
-const getJSON = require('get-json');
-const db = require('./js/db_functions.js');
-const get = require('./js/get_functions.js');
+let electron = require('electron');
+let spawn = require('child_process').spawn;
+require('dotenv').config();
+require('./server.js');
 
-/* ------------- Variables & Constants  ------------- */
-
-// Expose electron classes
-const {app, BrowserWindow, Menu, ipcMain} = electron;
-
-// Global variable for main electron window
+// Setup and launch electon UI
+const {app, BrowserWindow, Menu} = electron;
 let mainWindow;
 
-/* ------------------ config ------------------ */
+app.on('ready', function() {
+  //create main window
+  mainWindow = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      title: "CARNAC - Reddit Trend Analyzer",
+      show: false
+  });
+  mainWindow.webPreferences = {
+      nodeIntegration: false
+  };
+  
+  //Load HTML into window
+  mainWindow.loadURL(process.env.HOST + ":" + process.env.PORT + '/');    
 
-// Set ENV for production when ready
-//process.env.NODE_ENV = 'production';
+  //wait for page contents to load before displaying electron window
+  mainWindow.once('ready-to-show', function(){
+      mainWindow.show();
+  });
 
+  //quit app on close
+  mainWindow.on('closed', function(){ 
+    app.quit();
+  });
 
-/* ------------------ { MAIN } ------------------ */
+  //build menu from template
+  const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 
-// Listen for the app to be ready
-app.on('ready', () => {
-	// Create main electron window
-	mainWindow = new BrowserWindow({
-		width: 1200,
-		height: 800,
-		title: "CARNAC",
-		show: false
-	});
-	// Quit app when closed
-	mainWindow.on('closed', () => { 
-		app.quit();
-	});
-
-	//Load html into window
-	mainWindow.loadURL(url.format({
-		pathname: path.join(__dirname, 'html/index.html'),
-		protocol:'file:',
-		slashes: true
-	}));
-
-
-	// Wait for page contents to load before displaying electron window
-	mainWindow.once('ready-to-show', () => {
-		mainWindow.show()
-	});
-
-	// Listen for page to be ready in mainWindow
-	// ipcMain.on("mainWindowLoaded", () => {
-
-	// });
-
-	//Build menu from template
-	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
-	Menu.setApplicationMenu(mainMenu);
-
+  //insert menu
+  Menu.setApplicationMenu(mainMenu);
 });
 
-// Handle create add window
-function createAddWindow() {
-	//Create new Browser
-	addWindow = new BrowserWindow({
-		width: 300,
-		height: 200,
-		title: 'Add Subreddit'
-	});
-
-	//Load html into window
-	addWindow.loadURL(url.format({
-		pathname: path.join(__dirname, 'html/addSubreddit.html'),
-		protocol:'file:',
-		slashes: true
-	}));
-
-	// Gargage collection handle
-	addWindow.on('close', () => {
-		addWindow = null;
-	});
-}
-
-// // Template for Catching ipcMain item:add
-// ipcMain.on('item:add', function(e, item){
-// 	console.log(item);
-// 	mainWindow.webContents.send('item:add', item);
-// 	// addWindow.close();
-// });
-
-// Catch item:add using snoowrap
-ipcMain.on('item:add', (e, userInput) => {
-	
-	//create JSON object to prepare for insert
-	let data = {
-		subreddit: userInput,
-		type: 'subreddit'
-	}
-
-	db.storeData(data);
-
-
-	
-
-	addWindow.close();
-});
-
-// Create menu template
+//create menu template
 const mainMenuTemplate = [
-	{
-		label:'File',
-		submenu:[
-			{
-				label: 'Add Item',
-				click(){
-					createAddWindow();
-				}
-			},
-			{
-				label: 'Clear Items',
-				click(){
-					mainWindow.webContents.send('item:clear');
-				}
-			},
-			{
-				label: 'Quit',
-				accelerator: process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
-				click(){
-					app.quit();
-				}
-			}
-		]
-	}];
-	
-// If mac, add empty object to menu
-if (process.platform == 'darwin') {
-	mainMenuTemplate.unshift({});
+  {
+      label: 'File',
+      submenu: [
+          {
+              label: 'Dashboard',
+              click(){
+                  mainWindow.loadURL(process.env.HOST + ":" + process.env.PORT + '/dashboard');
+                  mainWindow.once('ready-to-show', function(){
+                      mainWindow.show();
+                  });
+              }
+          },
+          {
+              label: 'Set API Key',
+              click(){
+                  mainWindow.loadURL(process.env.HOST + ":" + process.env.PORT + '/setup');
+                  mainWindow.once('ready-to-show', function(){
+                      mainWindow.show();
+                  });            
+              }
+          },
+          {
+              label: 'Sign out',
+              click(){
+                  mainWindow.loadURL(process.env.HOST + ":" + process.env.PORT + '/logout');
+                  mainWindow.once('ready-to-show', function(){
+                      mainWindow.show();
+                  });            
+              }
+          },            
+          {
+              label: 'Exit',
+              accelerator: process.platform = 'darwin' ? 'Command+Q' : 
+              'Ctrl+Q',
+              click(){
+                  app.quit();
+              }
+          }
+      ]
+  }
+];
+
+if (process.platform == 'darwin'){
+  mainMenuTemplate.unshift({});
 }
 
-//Add developer tools item if not in production
-if (process.env.NODE_ENV !== 'production') {
-	mainMenuTemplate.push({
-		label: 'Developer Tools',
-		submenu:[
-			{
-				label: 'Toggle DevTools',
-				accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
-				click(item, focusedWindow){
-					focusedWindow.toggleDevTools();
-				}
-			},
-			{
-				role: 'reload'
-			}
-		]
-	});
+//add developer tools if not in production mode
+if (process.env.NODE_ENV !== 'production')
+{
+  mainMenuTemplate.push({
+      label: 'Developer Tools',
+      submenu:[
+          {
+              label:'Open / Close',
+              accelerator: process.platform = 'darwin' ? 'Command+I' : 
+              'Ctrl+I',
+              click(item, focusedWindow){
+                  focusedWindow.toggleDevTools();
+              }
+          },
+          {
+              role: 'reload'
+          }
+      ]
+  })
 }

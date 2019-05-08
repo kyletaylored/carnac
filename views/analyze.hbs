@@ -1,0 +1,89 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-lg-2" style="padding-left: 0">
+
+            <div class="list-group">
+
+                <a class="list-group-item list-group-item-action bg-danger" style="text-align: center; font-weight: bolder; font-size: xx-large; color: white">Carnac</a>
+                <a href="/dashboard" class="list-group-item list-group-item-action"><span class="material-icons">home</span><span
+                        style="position:absolute; ">
+                        &nbsp;&nbsp;Dashboard</span></a>
+                <a href="/add-subreddit" class="list-group-item list-group-item-action"><span class="material-icons">add_circle</span><span
+                        style="position:absolute; "> &nbsp;&nbsp;Add
+                        SubReddits</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><span class="material-icons">signal_cellular_alt</span><span
+                        style="position:absolute; ">
+                        &nbsp;&nbsp;Analyze Posts</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><span class="material-icons">visibility</span><span
+                        style="position:absolute; "> &nbsp;&nbsp;View
+                        Metadata</span></a>
+                <a href="/stored-posts" class="list-group-item list-group-item-action"><span class="material-icons">reorder</span><span
+                        style="position:absolute; "> &nbsp;&nbsp;Stored
+                        Posts</span></a>
+                <a href="/logout" class="list-group-item list-group-item-action"><span class="material-icons">reorder</span><span
+                        style="position:absolute; "> &nbsp;&nbsp;Logout
+                    </span></a>
+
+
+            </div>
+        </div>
+        <div class="col-xs-12 col-lg-10">
+
+
+            {{#if posts}}
+            {{#each posts}}
+
+            <br />
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-sm-8">
+
+                            <h5 class="card-title" style="text-decoration: underline">{{this.post}}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{this.permalink}}</h6>
+                            {{#each this.keywords}}
+                            <a href="#" class="btn btn-danger">{{this.name}}</a>
+                            {{/each}}
+                            
+                        </div>
+                        <div class="col-lg-4">
+                            {{#if this.sentiment.sad}}
+                            <h6 class="card-title">
+                                <i style="color:red" class="material-icons">sentiment_satisfied_alt</i>
+                                 &nbsp; Negative Sentiment
+                            </h6>
+                            {{else if this.sentiment.ok }}
+                            <h6 class="card-title">
+                                <i style="color:orange" class="material-icons">sentiment_satisfied_alt</i>
+                                &nbsp; Normal Sentiment
+                            </h6>
+                            {{else if this.sentiment.happy }}
+                            <h6 class="card-title">
+                                <i style="color:green" class="material-icons">sentiment_satisfied_alt</i>
+                                &nbsp; Positive Sentiment
+                            </h6>
+                            {{/if}}
+
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            {{/each}}
+
+            {{else }}
+            <div class="card-body">
+            
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h5 class="card-title" style="text-decoration: underline"><a href="/add-subreddit">No posts found. Please add a subreddit to start</a></h5>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+
+        </div>
+    </div>
+</div>
