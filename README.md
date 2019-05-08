@@ -17,4 +17,5 @@ Below is a mockup of the list dashboard.
 
 1. Create a Google NLP service account
     1. https://support.google.com/a/answer/7378726?hl=en
-2. "Placeholder for setting up .env file with Google NLP Credentials"
+2. Place Google NLP API key in APIkey.txt file
+3. "Placeholder for setting up .env file with Google NLP Credentials"
