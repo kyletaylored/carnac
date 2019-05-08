@@ -1,0 +1,91 @@
+ <div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-lg-2" style="padding-left: 0">
+
+            <div class="list-group">
+
+                <a class="list-group-item list-group-item-action bg-danger"
+                    style="text-align: center; font-weight: bolder; font-size: xx-large; color: white">Carnac</a>
+                <a href="/dashboard" class="list-group-item list-group-item-action"><span
+                        class="material-icons">home</span><span style="position:absolute; ">
+                        &nbsp;&nbsp;Dashboard</span></a>
+                <a href="/add-subreddit" class="list-group-item list-group-item-action"><span
+                        class="material-icons">add_circle</span><span style="position:absolute; "> &nbsp;&nbsp;Add
+                        SubReddits</span></a>
+                <a href="/analyze-posts" class="list-group-item list-group-item-action"><span
+                        class="material-icons">signal_cellular_alt</span><span style="position:absolute; ">
+                        &nbsp;&nbsp;Analyze Posts</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><span
+                        class="material-icons">visibility</span><span style="position:absolute; "> &nbsp;&nbsp;View
+                        Metadata</span></a>
+                <a href="/stored-posts" class="list-group-item list-group-item-action"><span
+                        class="material-icons">reorder</span><span style="position:absolute; "> &nbsp;&nbsp;Stored
+                        Posts</span></a>
+                <a href="/logout" class="list-group-item list-group-item-action"><span class="material-icons">reorder</span><span
+                        style="position:absolute; "> &nbsp;&nbsp;Logout
+                        </span></a>
+            </div>
+        </div>
+        <div class="col-xs-12 col-lg-10">
+
+            {{#each posts}}
+
+            <br />
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            
+                            <h5 class="card-title" style="text-decoration: underline">
+                                <a href="https://www.reddit.com{{this.permalink}}" target="_blank" style="color:black">{{this.title}}</a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">/r/{{this.subreddit}}</h6>
+                            
+                            {{#if this.selftext}}
+                            <p class="card-subtitle mb-2 text-muted">{{this.selftext}}</p>
+                            {{else}}
+                                <p class="card-subtitle mb-2 text-muted">No Summary</p>
+
+                            {{/if}}
+                            <a href="https://trends.google.com/trends/explore?geo=US&q={{this.title}}"  target="_blank" class="btn btn-danger">Trends</a>
+                            <a href="#" class="btn btn-danger">Keyword 2</a>
+                            <a href="#" class="btn btn-danger">Keyword 3</a>
+                            
+                            
+                            
+                            <form method="POST" action='/store-post'>
+                                {{#if this.saved}}
+                                    <a  style="color:white" name="storePost"  class="btn btn-success">saved</a>
+                                {{else}}
+                                    <input type="hidden" name="post_id" value={{this.post_id}}>
+                                    <button name="storePost" class="storePost btn btn-primary">save</button>
+                                {{/if}}
+                            </form>
+
+                        </div>
+                        <div class="col-lg-4">
+                        {{#if this.saved}}
+                        <h6 class="sentiment-happy card-title"><i class="material-icons">
+                                sentiment_satisfied_alt
+                            </i> &nbsp; Positive Sentiment</h6>
+                        {{else}}
+                        <h6 class="card-title"><i class="material-icons">
+                                sentiment_satisfied_alt
+                            </i> &nbsp; Positive Sentiment</h6>
+                        {{/if}}
+                           
+                        </div>
+                       
+                       
+                    </div>
+                    
+                </div>
+            </div> 
+            
+        {{/each}}
+        </div>
+    </div>
+</div>
+
+
+

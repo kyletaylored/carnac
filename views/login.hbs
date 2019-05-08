@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8">
+            <form method="post" action="/login" id="from">
+                <h1 class="form-head">To start, please enter your Google NLP API key to authenticate with Google (The key will be encrypted when stored locally)</h1>
+                {{#if message}}
+                    <div class="alert alert-danger">{{message}}</div>
+                {{/if}}
+                <hr>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text"  placeholder="Email" name="username">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="password" password="password" name="password"
+                        placeholder="Password">
+                </div>
+                <hr>
+                <input class="form-control btn-primary" type="submit" value="Login">
+            </form>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+</div>

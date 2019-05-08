@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8">
+            <form method="post" action="/setup" id="from">
+                <h6>To start, please enter your Google NLP API key to authenticate with Google servers.</h6>
+                {{#if message}}
+                    <div class="alert alert-danger">{{message}}</div>
+                {{/if}}
+                <hr>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" placeholder="APIkey" name="APIkey">
+                </div>
+                <hr>
+                <input class="form-control btn-primary" type="submit" value="Enter">
+            </form>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+</div>

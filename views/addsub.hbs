@@ -1,0 +1,47 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-lg-2" style="padding-left: 0">
+        
+            <div class="list-group">
+        
+                <a class="list-group-item list-group-item-action bg-danger"
+                    style="text-align: center; font-weight: bolder; font-size: xx-large; color: white">Carnac</a>
+                <a href="/dashboard" class="list-group-item list-group-item-action"><span
+                        class="material-icons">home</span><span style="position:absolute; ">
+                        &nbsp;&nbsp;Dashboard</span></a>
+                <a href="/add-subreddit" class="list-group-item list-group-item-action"><span
+                        class="material-icons">add_circle</span><span style="position:absolute; "> &nbsp;&nbsp;Add
+                        SubReddits</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><span
+                        class="material-icons">signal_cellular_alt</span><span style="position:absolute; ">
+                        &nbsp;&nbsp;Analyze Posts</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><span class="material-icons">visibility</span><span
+                        style="position:absolute; "> &nbsp;&nbsp;View
+                        Metadata</span></a>
+                <a href="/stored-posts" class="list-group-item list-group-item-action"><span
+                        class="material-icons">reorder</span><span style="position:absolute; "> &nbsp;&nbsp;Stored
+                        Posts</span></a>
+                <a href="/logout" class="list-group-item list-group-item-action"><span
+                        class="material-icons">reorder</span><span style="position:absolute; "> &nbsp;&nbsp;Logout
+                    </span></a>
+        
+        
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <form method="POST" action="/add-subreddit">
+                <div class="form-group">
+                    <label>Enter Subreddit</label>
+                    {{#if message}}
+                        <div class="alert alert-danger alert-dismissible" id="reditMessage">{{message}}</div>
+                    {{/if}} 
+                    
+                    <input class="form-control" type="text" id="item" autofocus name="subreddit">
+                </div>
+                <button class="btn btn-danger" type="submit" id="addSub">Add Subreddit</button>
+            </form>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+</div>
+
